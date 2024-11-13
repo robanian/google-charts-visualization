@@ -114,7 +114,7 @@
             }
 
             // Google Sheets의 공개된 GViz JSON URL
-            const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaIFrcF2feY9_ZSJUkcYylCBOHlYI0oMYP42kIqxMXCzHirnZ_KkeFIL0MVkw9exqy7845J-EN5AV7/pubhtml?gid=501496085&single=true';
+            const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaIFrcF2feY9_ZSJUkcYylCBOHlYI0oMYP42kIqxMXCzHirnZ_KkeFIL0MVkw9exqy7845J-EN5AV7/gviz/tq?tqx=out:json&gid=501496085&single=true';
 
             // 쿼리 작성: TokenParam에 해당하는 데이터 필터링
             const query = `SELECT Q2_Score, Q3_Score, Q4_Score, Q5_Score, Q6_Score, Q7_Score, Q8_Score, Q9_Score, Q10_Score, Q1_Score, controlfail, salience, probleresult WHERE Token = '${tokenParam}'`;
@@ -125,123 +125,128 @@
             fetch(queryURL)
                 .then(response => response.text())
                 .then(data => {
-                    // JSONP 포맷을 JSON으로 변환
-                    const jsonData = JSON.parse(data.substring(47).slice(0, -2));
+                    try {
+                        // JSONP 포맷을 JSON으로 변환
+                        const jsonData = JSON.parse(data.substring(47).slice(0, -2));
 
-                    const rows = jsonData.table.rows.map(row => row.c.map(cell => cell ? cell.v : 0));
+                        const rows = jsonData.table.rows.map(row => row.c.map(cell => cell ? cell.v : 0));
 
-                    // 데이터가 없는 경우 처리
-                    if (rows.length === 0) {
-                        document.body.innerHTML = '<div style="color:#543F2E; font-size:18px;">해당 토큰에 대한 데이터가 없습니다.</div>';
-                        return;
+                        // 데이터가 없는 경우 기본값 사용
+                        let controlfail_score = 0;
+                        let salience_score = 0;
+                        let probleresult_score = 0;
+
+                        if (rows.length > 0) {
+                            controlfail_score = rows[0][10];
+                            salience_score = rows[0][11];
+                            probleresult_score = rows[0][12];
+                        }
+
+                        // 퍼센트 계산 (예: 최대 점수를 100으로 가정)
+                        const controlfail_percent = Math.min((controlfail_score / 100) * 100, 100);
+                        const salience_percent = Math.min((salience_score / 100) * 100, 100);
+                        const probleresult_percent = Math.min((probleresult_score / 100) * 100, 100);
+
+                        // 각 차트 데이터 준비
+                        const data_controlfail = google.visualization.arrayToDataTable([
+                            ['요인', '점수'],
+                            ['조절 실패', controlfail_percent]
+                        ]);
+
+                        const data_salience = google.visualization.arrayToDataTable([
+                            ['요인', '점수'],
+                            ['현저성', salience_percent]
+                        ]);
+
+                        const data_probleresult = google.visualization.arrayToDataTable([
+                            ['요인', '점수'],
+                            ['문제적 결과', probleresult_percent]
+                        ]);
+
+                        // 차트 옵션 설정
+                        const options_controlfail = {
+                            title: '',
+                            hAxis: { 
+                                minValue: 0, 
+                                maxValue: 100,
+                                format: '#\'%\'',
+                                baselineColor: '#543F2E',
+                                gridlines: { color: '#543F2E' }
+                            },
+                            vAxis: { 
+                                textPosition: 'none' 
+                            },
+                            legend: { position: 'none' },
+                            colors: ['#FF8686'], // 조절 실패 색상
+                            chartArea: { width: '80%', height: '70%' },
+                            enableInteractivity: false, // 상호작용 비활성화
+                            tooltip: { trigger: 'none' }, // 툴팁 비활성화
+                            bar: { 
+                                groupWidth: '75%' 
+                            }
+                        };
+
+                        const options_salience = {
+                            title: '',
+                            hAxis: { 
+                                minValue: 0, 
+                                maxValue: 100,
+                                format: '#\'%\'',
+                                baselineColor: '#543F2E',
+                                gridlines: { color: '#543F2E' }
+                            },
+                            vAxis: { 
+                                textPosition: 'none' 
+                            },
+                            legend: { position: 'none' },
+                            colors: ['#54CA95'], // 현저성 색상
+                            chartArea: { width: '80%', height: '70%' },
+                            enableInteractivity: false, // 상호작용 비활성화
+                            tooltip: { trigger: 'none' }, // 툴팁 비활성화
+                            bar: { 
+                                groupWidth: '75%' 
+                            }
+                        };
+
+                        const options_probleresult = {
+                            title: '',
+                            hAxis: { 
+                                minValue: 0, 
+                                maxValue: 100,
+                                format: '#\'%\'',
+                                baselineColor: '#543F2E',
+                                gridlines: { color: '#543F2E' }
+                            },
+                            vAxis: { 
+                                textPosition: 'none' 
+                            },
+                            legend: { position: 'none' },
+                            colors: ['#2F7EFF'], // 문제적 결과 색상
+                            chartArea: { width: '80%', height: '70%' },
+                            enableInteractivity: false, // 상호작용 비활성화
+                            tooltip: { trigger: 'none' }, // 툴팁 비활성화
+                            bar: { 
+                                groupWidth: '75%' 
+                            }
+                        };
+
+                        // 차트 그리기
+                        const chart_controlfail = new google.visualization.BarChart(document.getElementById('chart_controlfail'));
+                        chart_controlfail.draw(data_controlfail, options_controlfail);
+
+                        const chart_salience = new google.visualization.BarChart(document.getElementById('chart_salience'));
+                        chart_salience.draw(data_salience, options_salience);
+
+                        const chart_probleresult = new google.visualization.BarChart(document.getElementById('chart_probleresult'));
+                        chart_probleresult.draw(data_probleresult, options_probleresult);
+                    } catch (e) {
+                        console.error('데이터 처리 중 오류 발생:', e);
+                        document.body.innerHTML = `<div style="color:#543F2E; font-size:18px;">데이터를 처리하는 중 오류가 발생했습니다: ${e.message}</div>`;
                     }
-
-                    // 요인별 점수 추출
-                    const controlfail_score = rows[0][10];
-                    const salience_score = rows[0][11];
-                    const probleresult_score = rows[0][12];
-
-                    // 퍼센트 계산 (예: 최대 점수를 100으로 가정)
-                    const controlfail_percent = Math.min((controlfail_score / 100) * 100, 100);
-                    const salience_percent = Math.min((salience_score / 100) * 100, 100);
-                    const probleresult_percent = Math.min((probleresult_score / 100) * 100, 100);
-
-                    // 각 차트 데이터 준비
-                    const data_controlfail = google.visualization.arrayToDataTable([
-                        ['요인', '점수'],
-                        ['조절 실패', controlfail_percent]
-                    ]);
-
-                    const data_salience = google.visualization.arrayToDataTable([
-                        ['요인', '점수'],
-                        ['현저성', salience_percent]
-                    ]);
-
-                    const data_probleresult = google.visualization.arrayToDataTable([
-                        ['요인', '점수'],
-                        ['문제적 결과', probleresult_percent]
-                    ]);
-
-                    // 차트 옵션 설정
-                    const options_controlfail = {
-                        title: '',
-                        hAxis: { 
-                            minValue: 0, 
-                            maxValue: 100,
-                            format: '#\'%\'',
-                            baselineColor: '#543F2E',
-                            gridlines: { color: '#543F2E' }
-                        },
-                        vAxis: { 
-                            textPosition: 'none' 
-                        },
-                        legend: { position: 'none' },
-                        colors: ['#FF8686'], // 조절 실패 색상
-                        chartArea: { width: '80%', height: '70%' },
-                        enableInteractivity: false, // 상호작용 비활성화
-                        tooltip: { trigger: 'none' }, // 툴팁 비활성화
-                        bar: { 
-                            groupWidth: '75%' 
-                        }
-                    };
-
-                    const options_salience = {
-                        title: '',
-                        hAxis: { 
-                            minValue: 0, 
-                            maxValue: 100,
-                            format: '#\'%\'',
-                            baselineColor: '#543F2E',
-                            gridlines: { color: '#543F2E' }
-                        },
-                        vAxis: { 
-                            textPosition: 'none' 
-                        },
-                        legend: { position: 'none' },
-                        colors: ['#54CA95'], // 현저성 색상
-                        chartArea: { width: '80%', height: '70%' },
-                        enableInteractivity: false, // 상호작용 비활성화
-                        tooltip: { trigger: 'none' }, // 툴팁 비활성화
-                        bar: { 
-                            groupWidth: '75%' 
-                        }
-                    };
-
-                    const options_probleresult = {
-                        title: '',
-                        hAxis: { 
-                            minValue: 0, 
-                            maxValue: 100,
-                            format: '#\'%\'',
-                            baselineColor: '#543F2E',
-                            gridlines: { color: '#543F2E' }
-                        },
-                        vAxis: { 
-                            textPosition: 'none' 
-                        },
-                        legend: { position: 'none' },
-                        colors: ['#2F7EFF'], // 문제적 결과 색상
-                        chartArea: { width: '80%', height: '70%' },
-                        enableInteractivity: false, // 상호작용 비활성화
-                        tooltip: { trigger: 'none' }, // 툴팁 비활성화
-                        bar: { 
-                            groupWidth: '75%' 
-                        }
-                    };
-
-                    // 차트 그리기
-                    const chart_controlfail = new google.visualization.BarChart(document.getElementById('chart_controlfail'));
-                    chart_controlfail.draw(data_controlfail, options_controlfail);
-
-                    const chart_salience = new google.visualization.BarChart(document.getElementById('chart_salience'));
-                    chart_salience.draw(data_salience, options_salience);
-
-                    const chart_probleresult = new google.visualization.BarChart(document.getElementById('chart_probleresult'));
-                    chart_probleresult.draw(data_probleresult, options_probleresult);
                 })
                 .catch(error => {
                     console.error('데이터를 가져오는 중 오류 발생:', error);
-                    document.body.innerHTML = `<div style="color:#543F2E; font-size:18px;">데이터를 가져오는 중 오류가 발생했습니다: ${error}</div>`;
+                    document.body.innerHTML = `<div style="color:#543F2E; font-size:18px;">데이터를 가져오는 중 오류가 발생했습니다: ${error.message}</div>`;
                 });
         }
     </script>

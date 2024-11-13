@@ -98,12 +98,31 @@
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(drawCharts);
 
+        // URL 파라미터 가져오기 함수
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
         function drawCharts() {
+            // URL 파라미터에서 TokenParam 가져오기
+            const tokenParam = getQueryParam('params.ds0.tokenparam') || getQueryParam('ds0.tokenparam') || getQueryParam('TokenParam');
+
+            if (!tokenParam) {
+                document.body.innerHTML = '<div style="color:#543F2E; font-size:18px;">토큰이 전달되지 않았습니다.</div>';
+                return;
+            }
+
             // Google Sheets의 공개된 GViz JSON URL
             const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaIFrcF2feY9_ZSJUkcYylCBOHlYI0oMYP42kIqxMXCzHirnZ_KkeFIL0MVkw9exqy7845J-EN5AV7/gviz/tq?tqx=out:json&gid=501496085&single=true';
 
+            // 쿼리 작성: TokenParam에 해당하는 데이터 필터링
+            const query = `SELECT Q2_Score, Q3_Score, Q4_Score, Q5_Score, Q6_Score, Q7_Score, Q8_Score, Q9_Score, Q10_Score, Q1_Score, controlfail, salience, probleresult WHERE Token = '${tokenParam}'`;
+            const queryEncoded = encodeURIComponent(query);
+            const queryURL = `${sheetURL}&tq=${queryEncoded}`;
+
             // 데이터 가져오기
-            fetch(sheetURL)
+            fetch(queryURL)
                 .then(response => response.text())
                 .then(data => {
                     // JSONP 포맷을 JSON으로 변환
@@ -123,9 +142,9 @@
                     const probleresult_score = rows[0][12];
 
                     // 퍼센트 계산 (예: 최대 점수를 100으로 가정)
-                    const controlfail_percent = (controlfail_score / 100) * 100;
-                    const salience_percent = (salience_score / 100) * 100;
-                    const probleresult_percent = (probleresult_score / 100) * 100;
+                    const controlfail_percent = Math.min((controlfail_score / 100) * 100, 100);
+                    const salience_percent = Math.min((salience_score / 100) * 100, 100);
+                    const probleresult_percent = Math.min((probleresult_score / 100) * 100, 100);
 
                     // 각 차트 데이터 준비
                     const data_controlfail = google.visualization.arrayToDataTable([
@@ -163,12 +182,6 @@
                         tooltip: { trigger: 'none' }, // 툴팁 비활성화
                         bar: { 
                             groupWidth: '75%' 
-                        },
-                        // 막대 라운드 처리 (SVG 후처리)
-                        animation: {
-                            startup: true,
-                            duration: 500,
-                            easing: 'out'
                         }
                     };
 
@@ -191,12 +204,6 @@
                         tooltip: { trigger: 'none' }, // 툴팁 비활성화
                         bar: { 
                             groupWidth: '75%' 
-                        },
-                        // 막대 라운드 처리 (SVG 후처리)
-                        animation: {
-                            startup: true,
-                            duration: 500,
-                            easing: 'out'
                         }
                     };
 
@@ -219,12 +226,6 @@
                         tooltip: { trigger: 'none' }, // 툴팁 비활성화
                         bar: { 
                             groupWidth: '75%' 
-                        },
-                        // 막대 라운드 처리 (SVG 후처리)
-                        animation: {
-                            startup: true,
-                            duration: 500,
-                            easing: 'out'
                         }
                     };
 
@@ -237,28 +238,11 @@
 
                     const chart_probleresult = new google.visualization.BarChart(document.getElementById('chart_probleresult'));
                     chart_probleresult.draw(data_probleresult, options_probleresult);
-
-                    // 막대 라운드 처리 (후처리)
-                    setTimeout(() => {
-                        applyRoundedBars('chart_controlfail');
-                        applyRoundedBars('chart_salience');
-                        applyRoundedBars('chart_probleresult');
-                    }, 1000); // 차트가 그려진 후 실행
                 })
                 .catch(error => {
                     console.error('데이터를 가져오는 중 오류 발생:', error);
-                    document.body.innerHTML = '<div style="color:#543F2E; font-size:18px;">데이터를 가져오는 중 오류가 발생했습니다.</div>';
+                    document.body.innerHTML = `<div style="color:#543F2E; font-size:18px;">데이터를 가져오는 중 오류가 발생했습니다: ${error}</div>`;
                 });
-        }
-
-        // 막대 라운드 처리 함수
-        function applyRoundedBars(chartId) {
-            const chart = document.getElementById(chartId);
-            const bars = chart.getElementsByTagName('rect');
-            for (let i = 0; i < bars.length; i++) {
-                bars[i].setAttribute('rx', '15'); // 가로막대 끝을 라운드 처리
-                bars[i].setAttribute('ry', '15'); // 세로막대 끝을 라운드 처리
-            }
         }
     </script>
 </body>

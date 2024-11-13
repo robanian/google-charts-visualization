@@ -1,0 +1,110 @@
+/* styles.css */
+
+/* 전체 페이지 스타일 */
+body {
+    background-color: #FEFAE5;
+    font-family: Arial, sans-serif;
+    color: #543F2E;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    margin: 0;
+}
+
+/* 컨테이너 */
+.container {
+    max-width: 800px;
+    width: 100%;
+    background-color: #FFFFFF;
+    padding: 20px;
+    box-sizing: border-box;
+    border: 1px solid #543F2E;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* 타이틀 스타일 */
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* 그래프 섹션 스타일 */
+.graphs {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+@media (min-width: 600px) {
+    .graphs {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+/* 그래프 아이템 스타일 */
+.graph-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 그래프 제목 스타일 */
+.graph-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.sub {
+    font-size: 14px;
+    font-weight: normal;
+    display: block;
+    margin-top: 5px;
+}
+
+/* 그래프 스타일 */
+.chart {
+    width: 100%;
+    height: 100px;
+}
+
+/* 범례 스타일 */
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.legend-item::before {
+    content: "";
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background-color: #FF6C6C; /* 기본 색상, 개별적으로 수정 가능 */
+    border-radius: 5px;
+}
+
+/* 설명 스타일 */
+.description {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.description-bold {
+    font-size: 16px;
+    font-weight: bold;
+}

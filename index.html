@@ -3,252 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <title>그래프로 보는 나의 스마트폰 과의존 척도 해석</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Charts 로드 -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <style>
-        body {
-            background-color: #FEFAE5;
-            font-family: Arial, sans-serif;
-            color: #543F2E; /* 모든 폰트 색상 설정 */
-            text-align: center;
-            padding: 20px;
-        }
-        h1 {
-            color: #543F2E; /* 제목 폰트 색상 설정 */
-            margin-bottom: 40px;
-        }
-        .chart-container {
-            display: flex;
-            justify-content: center;
-            gap: 50px;
-            margin-bottom: 40px;
-        }
-        .chart-wrapper {
-            width: 400px;
-            height: 300px;
-            border: 2px solid #543F2E; /* 테두리 색상 설정 */
-            border-radius: 10px; /* 테두리 라운드 설정 */
-            padding: 10px;
-            box-sizing: border-box;
-            background-color: #FFFFFF;
-        }
-        .legend-label {
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-        .legend {
-            margin-bottom: 20px;
-        }
-        .legend span {
-            display: inline-block;
-            width: 200px;
-            text-align: center;
-            font-weight: bold;
-        }
-        .description {
-            text-align: left;
-            max-width: 800px;
-            margin: 0 auto;
-            color: #543F2E;
-            font-size: 16px;
-            line-height: 1.5;
-        }
-        .description p {
-            margin: 10px 0;
-        }
-    </style>
 </head>
 <body>
-    <h1>그래프로 보는 나의 스마트폰 과의존 척도 해석</h1>
-    
-    <div class="chart-container">
-        <!-- 조절 실패 (1요인) 그래프 -->
-        <div class="chart-wrapper">
-            <div class="legend-label">조절 실패<br>(1요인)</div>
-            <div id="chart_controlfail" style="width: 100%; height: 80%;"></div>
+    <div class="container">
+        <!-- 타이틀 -->
+        <div class="title">
+            그래프로 보는 나의 스마트폰 과의존 척도 해석
         </div>
         
-        <!-- 현저성 (2요인) 그래프 -->
-        <div class="chart-wrapper">
-            <div class="legend-label">현저성<br>(2요인)</div>
-            <div id="chart_salience" style="width: 100%; height: 80%;"></div>
+        <!-- 그래프 섹션 -->
+        <div class="graphs">
+            <div class="graph-item">
+                <div class="graph-title">
+                    조절 실패 <span class="sub">1요인</span>
+                </div>
+                <div id="controlfail-chart" class="chart"></div>
+            </div>
+            <div class="graph-item">
+                <div class="graph-title">
+                    현저성 <span class="sub">2요인</span>
+                </div>
+                <div id="salience-chart" class="chart"></div>
+            </div>
+            <div class="graph-item">
+                <div class="graph-title">
+                    문제적 결과 <span class="sub">3요인</span>
+                </div>
+                <div id="probleresult-chart" class="chart"></div>
+            </div>
         </div>
         
-        <!-- 문제적 결과 (3요인) 그래프 -->
-        <div class="chart-wrapper">
-            <div class="legend-label">문제적 결과<br>(3요인)</div>
-            <div id="chart_probleresult" style="width: 100%; height: 80%;"></div>
+        <!-- 범례 -->
+        <div class="legend">
+            <span class="legend-item" style="background-color: rgba(255, 108, 108, 1.00);"></span> 전혀 그렇지 않다.(0~24%)
+            <span class="legend-item" style="background-color: rgba(255, 108, 108, 0.75);"></span> 그렇지 않다.(25~50%)
+            <span class="legend-item" style="background-color: rgba(255, 108, 108, 0.5);"></span> 그렇다.(51~70%)
+            <span class="legend-item" style="background-color: rgba(255, 108, 108, 0.25);"></span> 항상 그렇다.(71~100%)
+        </div>
+        
+        <!-- 설명 -->
+        <div class="description">
+            • <span class="description-bold">조절 실패</span>: 이용자의 주관적 목표 대비 스마트폰 이용에 대한 자율적 조절 능력이 떨어지는 것<br>
+            • <span class="description-bold">현저성</span>: 이용자의 주관적 목표 대비 스마트폰 이용에 대한 자율적 조절 능력이 떨어지는 것<br>
+            • <span class="description-bold">문제적 결과</span>: 스마트폰 이용으로 인해 신체적, 심리적, 사회적으로 부정적인 결과를 경험함에도 불구하고 스마트폰을 지속적으로 이용하는 것
         </div>
     </div>
     
-    <div class="legend">
-        <span>전혀 그렇지않다.<br>(0~24%)</span>
-        <span>그렇지 않다.<br>(25~50%)</span>
-        <span>그렇다.<br>(51~70%)</span>
-        <span>항상 그렇다.<br>(71~100%)</span>
-    </div>
-    
-    <div class="description">
-        <p>조절실패 : 이용자의 주관적 목표 대비 스마트폰 이용에 대한 자율절 조절 능력이 떨어지는 것</p>
-        <p>현저성 : 이용자의 주관적 목표 대비 스마트폰 이용에 대한 자율적 조절능력이 떨어지는 것</p>
-        <p>문제적 결과 : 스마트폰 이용으로 인해 신체적, 심리적, 사회적으로 부정적인 결과를 경험함에도 불구하고 스마트폰을 지속적으로 이용하는 것</p>
-    </div>
-    
-    <script type="text/javascript">
-        // Google Charts 로드
-        google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(drawCharts);
-
-        // URL 파라미터 가져오기 함수
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
-        }
-
-        function drawCharts() {
-            // URL 파라미터에서 TokenParam 가져오기
-            const tokenParam = getQueryParam('params.ds0.tokenparam') || getQueryParam('ds0.tokenparam') || getQueryParam('TokenParam');
-
-            if (!tokenParam) {
-                document.body.innerHTML = '<div style="color:#543F2E; font-size:18px;">토큰이 전달되지 않았습니다.</div>';
-                return;
-            }
-
-            // Google Sheets의 공개된 GViz JSON URL
-            const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaIFrcF2feY9_ZSJUkcYylCBOHlYI0oMYP42kIqxMXCzHirnZ_KkeFIL0MVkw9exqy7845J-EN5AV7/gviz/tq?tqx=out:json&gid=501496085&single=true';
-
-            // 쿼리 작성: TokenParam에 해당하는 데이터 필터링
-            const query = `SELECT Q2_Score, Q3_Score, Q4_Score, Q5_Score, Q6_Score, Q7_Score, Q8_Score, Q9_Score, Q10_Score, Q1_Score, controlfail, salience, probleresult WHERE Token = '${tokenParam}'`;
-            const queryEncoded = encodeURIComponent(query);
-            const queryURL = `${sheetURL}&tq=${queryEncoded}`;
-
-            // 데이터 가져오기
-            fetch(queryURL)
-                .then(response => response.text())
-                .then(data => {
-                    try {
-                        // JSONP 포맷을 JSON으로 변환
-                        const jsonData = JSON.parse(data.substring(47).slice(0, -2));
-
-                        const rows = jsonData.table.rows.map(row => row.c.map(cell => cell ? cell.v : 0));
-
-                        // 데이터가 없는 경우 기본값 사용
-                        let controlfail_score = 0;
-                        let salience_score = 0;
-                        let probleresult_score = 0;
-
-                        if (rows.length > 0) {
-                            controlfail_score = rows[0][10];
-                            salience_score = rows[0][11];
-                            probleresult_score = rows[0][12];
-                        }
-
-                        // 퍼센트 계산 (예: 최대 점수를 100으로 가정)
-                        const controlfail_percent = Math.min((controlfail_score / 100) * 100, 100);
-                        const salience_percent = Math.min((salience_score / 100) * 100, 100);
-                        const probleresult_percent = Math.min((probleresult_score / 100) * 100, 100);
-
-                        // 각 차트 데이터 준비
-                        const data_controlfail = google.visualization.arrayToDataTable([
-                            ['요인', '점수'],
-                            ['조절 실패', controlfail_percent]
-                        ]);
-
-                        const data_salience = google.visualization.arrayToDataTable([
-                            ['요인', '점수'],
-                            ['현저성', salience_percent]
-                        ]);
-
-                        const data_probleresult = google.visualization.arrayToDataTable([
-                            ['요인', '점수'],
-                            ['문제적 결과', probleresult_percent]
-                        ]);
-
-                        // 차트 옵션 설정
-                        const options_controlfail = {
-                            title: '',
-                            hAxis: { 
-                                minValue: 0, 
-                                maxValue: 100,
-                                format: '#\'%\'',
-                                baselineColor: '#543F2E',
-                                gridlines: { color: '#543F2E' }
-                            },
-                            vAxis: { 
-                                textPosition: 'none' 
-                            },
-                            legend: { position: 'none' },
-                            colors: ['#FF8686'], // 조절 실패 색상
-                            chartArea: { width: '80%', height: '70%' },
-                            enableInteractivity: false, // 상호작용 비활성화
-                            tooltip: { trigger: 'none' }, // 툴팁 비활성화
-                            bar: { 
-                                groupWidth: '75%' 
-                            }
-                        };
-
-                        const options_salience = {
-                            title: '',
-                            hAxis: { 
-                                minValue: 0, 
-                                maxValue: 100,
-                                format: '#\'%\'',
-                                baselineColor: '#543F2E',
-                                gridlines: { color: '#543F2E' }
-                            },
-                            vAxis: { 
-                                textPosition: 'none' 
-                            },
-                            legend: { position: 'none' },
-                            colors: ['#54CA95'], // 현저성 색상
-                            chartArea: { width: '80%', height: '70%' },
-                            enableInteractivity: false, // 상호작용 비활성화
-                            tooltip: { trigger: 'none' }, // 툴팁 비활성화
-                            bar: { 
-                                groupWidth: '75%' 
-                            }
-                        };
-
-                        const options_probleresult = {
-                            title: '',
-                            hAxis: { 
-                                minValue: 0, 
-                                maxValue: 100,
-                                format: '#\'%\'',
-                                baselineColor: '#543F2E',
-                                gridlines: { color: '#543F2E' }
-                            },
-                            vAxis: { 
-                                textPosition: 'none' 
-                            },
-                            legend: { position: 'none' },
-                            colors: ['#2F7EFF'], // 문제적 결과 색상
-                            chartArea: { width: '80%', height: '70%' },
-                            enableInteractivity: false, // 상호작용 비활성화
-                            tooltip: { trigger: 'none' }, // 툴팁 비활성화
-                            bar: { 
-                                groupWidth: '75%' 
-                            }
-                        };
-
-                        // 차트 그리기
-                        const chart_controlfail = new google.visualization.BarChart(document.getElementById('chart_controlfail'));
-                        chart_controlfail.draw(data_controlfail, options_controlfail);
-
-                        const chart_salience = new google.visualization.BarChart(document.getElementById('chart_salience'));
-                        chart_salience.draw(data_salience, options_salience);
-
-                        const chart_probleresult = new google.visualization.BarChart(document.getElementById('chart_probleresult'));
-                        chart_probleresult.draw(data_probleresult, options_probleresult);
-                    } catch (e) {
-                        console.error('데이터 처리 중 오류 발생:', e);
-                        document.body.innerHTML = `<div style="color:#543F2E; font-size:18px;">데이터를 처리하는 중 오류가 발생했습니다: ${e.message}</div>`;
-                    }
-                })
-                .catch(error => {
-                    console.error('데이터를 가져오는 중 오류 발생:', error);
-                    document.body.innerHTML = `<div style="color:#543F2E; font-size:18px;">데이터를 가져오는 중 오류가 발생했습니다: ${error.message}</div>`;
-                });
-        }
-    </script>
+    <!-- JavaScript 파일 로드 -->
+    <script src="script.js"></script>
 </body>
 </html>

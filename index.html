@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>그래프로 보는 나의 스마트폰 과의존 척도 해석</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        body {
+            background-color: #FEFAE5;
+            font-family: Arial, sans-serif;
+            color: #543F2E; /* 모든 폰트 색상 설정 */
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #543F2E; /* 제목 폰트 색상 설정 */
+            margin-bottom: 40px;
+        }
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-bottom: 40px;
+        }
+        .chart-wrapper {
+            width: 400px;
+            height: 300px;
+            border: 2px solid #543F2E; /* 테두리 색상 설정 */
+            border-radius: 10px; /* 테두리 라운드 설정 */
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: #FFFFFF;
+        }
+        .legend-label {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .legend {
+            margin-bottom: 20px;
+        }
+        .legend span {
+            display: inline-block;
+            width: 200px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .description {
+            text-align: left;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #543F2E;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .description p {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>그래프로 보는 나의 스마트폰 과의존 척도 해석</h1>
+    
+    <div class="chart-container">
+        <!-- 조절 실패 (1요인) 그래프 -->
+        <div class="chart-wrapper">
+            <div class="legend-label">조절 실패<br>(1요인)</div>
+            <div id="chart_controlfail" style="width: 100%; height: 80%;"></div>
+        </div>
+        
+        <!-- 현저성 (2요인) 그래프 -->
+        <div class="chart-wrapper">
+            <div class="legend-label">현저성<br>(2요인)</div>
+            <div id="chart_salience" style="width: 100%; height: 80%;"></div>
+        </div>
+        
+        <!-- 문제적 결과 (3요인) 그래프 -->
+        <div class="chart-wrapper">
+            <div class="legend-label">문제적 결과<br>(3요인)</div>
+            <div id="chart_probleresult" style="width: 100%; height: 80%;"></div>
+        </div>
+    </div>
+    
+    <div class="legend">
+        <span>전혀 그렇지않다.<br>(0~24%)</span>
+        <span>그렇지 않다.<br>(25~50%)</span>
+        <span>그렇다.<br>(51~70%)</span>
+        <span>항상 그렇다.<br>(71~100%)</span>
+    </div>
+    
+    <div class="description">
+        <p>조절실패 : 이용자의 주관적 목표 대비 스마트폰 이용에 대한 자율절 조절 능력이 떨어지는 것</p>
+        <p>현저성 : 이용자의 주관적 목표 대비 스마트폰 이용에 대한 자율적 조절능력이 떨어지는 것</p>
+        <p>문제적 결과 : 스마트폰 이용으로 인해 신체적, 심리적, 사회적으로 부정적인 결과를 경험함에도 불구하고 스마트폰을 지속적으로 이용하는 것</p>
+    </div>
+    
+    <script type="text/javascript">
+        // Google Charts 로드
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawCharts);
+
+        function drawCharts() {
+            // Google Sheets의 공개된 GViz JSON URL
+            const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaIFrcF2feY9_ZSJUkcYylCBOHlYI0oMYP42kIqxMXCzHirnZ_KkeFIL0MVkw9exqy7845J-EN5AV7/gviz/tq?tqx=out:json&gid=501496085&single=true';
+
+            // 데이터 가져오기
+            fetch(sheetURL)
+                .then(response => response.text())
+                .then(data => {
+                    // JSONP 포맷을 JSON으로 변환
+                    const jsonData = JSON.parse(data.substring(47).slice(0, -2));
+
+                    const rows = jsonData.table.rows.map(row => row.c.map(cell => cell ? cell.v : 0));
+
+                    // 데이터가 없는 경우 처리
+                    if (rows.length === 0) {
+                        document.body.innerHTML = '<div style="color:#543F2E; font-size:18px;">해당 토큰에 대한 데이터가 없습니다.</div>';
+                        return;
+                    }
+
+                    // 요인별 점수 추출
+                    const controlfail_score = rows[0][10];
+                    const salience_score = rows[0][11];
+                    const probleresult_score = rows[0][12];
+
+                    // 퍼센트 계산 (예: 최대 점수를 100으로 가정)
+                    const controlfail_percent = (controlfail_score / 100) * 100;
+                    const salience_percent = (salience_score / 100) * 100;
+                    const probleresult_percent = (probleresult_score / 100) * 100;
+
+                    // 각 차트 데이터 준비
+                    const data_controlfail = google.visualization.arrayToDataTable([
+                        ['요인', '점수'],
+                        ['조절 실패', controlfail_percent]
+                    ]);
+
+                    const data_salience = google.visualization.arrayToDataTable([
+                        ['요인', '점수'],
+                        ['현저성', salience_percent]
+                    ]);
+
+                    const data_probleresult = google.visualization.arrayToDataTable([
+                        ['요인', '점수'],
+                        ['문제적 결과', probleresult_percent]
+                    ]);
+
+                    // 차트 옵션 설정
+                    const options_controlfail = {
+                        title: '',
+                        hAxis: { 
+                            minValue: 0, 
+                            maxValue: 100,
+                            format: '#\'%\'',
+                            baselineColor: '#543F2E',
+                            gridlines: { color: '#543F2E' }
+                        },
+                        vAxis: { 
+                            textPosition: 'none' 
+                        },
+                        legend: { position: 'none' },
+                        colors: ['#FF8686'], // 조절 실패 색상
+                        chartArea: { width: '80%', height: '70%' },
+                        enableInteractivity: false, // 상호작용 비활성화
+                        tooltip: { trigger: 'none' }, // 툴팁 비활성화
+                        bar: { 
+                            groupWidth: '75%' 
+                        },
+                        // 막대 라운드 처리 (SVG 후처리)
+                        animation: {
+                            startup: true,
+                            duration: 500,
+                            easing: 'out'
+                        }
+                    };
+
+                    const options_salience = {
+                        title: '',
+                        hAxis: { 
+                            minValue: 0, 
+                            maxValue: 100,
+                            format: '#\'%\'',
+                            baselineColor: '#543F2E',
+                            gridlines: { color: '#543F2E' }
+                        },
+                        vAxis: { 
+                            textPosition: 'none' 
+                        },
+                        legend: { position: 'none' },
+                        colors: ['#54CA95'], // 현저성 색상
+                        chartArea: { width: '80%', height: '70%' },
+                        enableInteractivity: false, // 상호작용 비활성화
+                        tooltip: { trigger: 'none' }, // 툴팁 비활성화
+                        bar: { 
+                            groupWidth: '75%' 
+                        },
+                        // 막대 라운드 처리 (SVG 후처리)
+                        animation: {
+                            startup: true,
+                            duration: 500,
+                            easing: 'out'
+                        }
+                    };
+
+                    const options_probleresult = {
+                        title: '',
+                        hAxis: { 
+                            minValue: 0, 
+                            maxValue: 100,
+                            format: '#\'%\'',
+                            baselineColor: '#543F2E',
+                            gridlines: { color: '#543F2E' }
+                        },
+                        vAxis: { 
+                            textPosition: 'none' 
+                        },
+                        legend: { position: 'none' },
+                        colors: ['#2F7EFF'], // 문제적 결과 색상
+                        chartArea: { width: '80%', height: '70%' },
+                        enableInteractivity: false, // 상호작용 비활성화
+                        tooltip: { trigger: 'none' }, // 툴팁 비활성화
+                        bar: { 
+                            groupWidth: '75%' 
+                        },
+                        // 막대 라운드 처리 (SVG 후처리)
+                        animation: {
+                            startup: true,
+                            duration: 500,
+                            easing: 'out'
+                        }
+                    };
+
+                    // 차트 그리기
+                    const chart_controlfail = new google.visualization.BarChart(document.getElementById('chart_controlfail'));
+                    chart_controlfail.draw(data_controlfail, options_controlfail);
+
+                    const chart_salience = new google.visualization.BarChart(document.getElementById('chart_salience'));
+                    chart_salience.draw(data_salience, options_salience);
+
+                    const chart_probleresult = new google.visualization.BarChart(document.getElementById('chart_probleresult'));
+                    chart_probleresult.draw(data_probleresult, options_probleresult);
+
+                    // 막대 라운드 처리 (후처리)
+                    setTimeout(() => {
+                        applyRoundedBars('chart_controlfail');
+                        applyRoundedBars('chart_salience');
+                        applyRoundedBars('chart_probleresult');
+                    }, 1000); // 차트가 그려진 후 실행
+                })
+                .catch(error => {
+                    console.error('데이터를 가져오는 중 오류 발생:', error);
+                    document.body.innerHTML = '<div style="color:#543F2E; font-size:18px;">데이터를 가져오는 중 오류가 발생했습니다.</div>';
+                });
+        }
+
+        // 막대 라운드 처리 함수
+        function applyRoundedBars(chartId) {
+            const chart = document.getElementById(chartId);
+            const bars = chart.getElementsByTagName('rect');
+            for (let i = 0; i < bars.length; i++) {
+                bars[i].setAttribute('rx', '15'); // 가로막대 끝을 라운드 처리
+                bars[i].setAttribute('ry', '15'); // 세로막대 끝을 라운드 처리
+            }
+        }
+    </script>
+</body>
+</html>

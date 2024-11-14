@@ -4,52 +4,43 @@ function getTokenFromURL() {
   return params.get('token');
 }
 
+// 스프레드시트 데이터 가져오기
+async function fetchData(callback) {
+  const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaIFrcF2feY9_ZSJUkcYylCBOHlYI0oMYP42kIqxMXCzHirnZ_KkeFIL0MVkw9exqy7845J-EN5AV7/pub?gid=501496085&single=true&output=csv';
+
+  try {
+    const response = await fetch(csvUrl);
+    const csvText = await response.text();
+
+    // CSV 데이터 파싱
+    const data = Papa.parse(csvText, { header: true });
+    callback(data.data);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    alert('데이터를 가져올 수 없습니다.');
+  }
+}
+
 // 데이터 처리 및 그래프 업데이트
-function processSpreadsheetData(response) {
+function processSpreadsheetData(rows) {
   const token = getTokenFromURL();
   if (!token) {
     alert('유효한 토큰이 필요합니다.');
     return;
   }
 
-  const dataTable = response.getDataTable();
-
-  // 열 이름 가져오기
-  const headers = [];
-  for (let i = 0; i < dataTable.getNumberOfColumns(); i++) {
-    headers.push(dataTable.getColumnLabel(i));
-  }
-
-  const tokenIndex = headers.indexOf('Token');
-  if (tokenIndex === -1) {
-    alert('Token 열을 찾을 수 없습니다.');
-    return;
-  }
-
   // 토큰에 해당하는 행 찾기
-  let targetRow = null;
-  for (let i = 0; i < dataTable.getNumberOfRows(); i++) {
-    const cellValue = dataTable.getValue(i, tokenIndex);
-    if (cellValue === token) {
-      targetRow = i;
-      break;
-    }
-  }
+  const targetRow = rows.find(row => row.Token === token);
 
-  if (targetRow === null) {
+  if (!targetRow) {
     alert('토큰에 해당하는 데이터를 찾을 수 없습니다.');
     return;
   }
 
-  // 각 점수의 인덱스 찾기
-  const controlFailIndex = headers.indexOf('controlfail');
-  const salienceIndex = headers.indexOf('salience');
-  const problemResultIndex = headers.indexOf('probleresult');
-
   // 점수 값 가져오기
-  const controlFailScore = parseInt(dataTable.getValue(targetRow, controlFailIndex));
-  const salienceScore = parseInt(dataTable.getValue(targetRow, salienceIndex));
-  const problemResultScore = parseInt(dataTable.getValue(targetRow, problemResultIndex));
+  const controlFailScore = parseInt(targetRow.controlfail);
+  const salienceScore = parseInt(targetRow.salience);
+  const problemResultScore = parseInt(targetRow.probleresult);
 
   // 각 점수의 퍼센트 계산
   const controlFailPercent = ((controlFailScore - 3) / (12 - 3)) * 100;
@@ -73,7 +64,7 @@ function processSpreadsheetData(response) {
   drawGraphs();
 }
 
-// 그래프 그리기 함수
+// 그래프 그리기 함수 (기존과 동일)
 function drawGraphs() {
   const bars = document.querySelectorAll('.bar-common');
 
@@ -105,39 +96,7 @@ function drawGraphs() {
   });
 }
 
-// 스프레드시트 데이터 가져오기
-function fetchData(callback) {
-  const spreadsheetKey = '1ESc7JIag5FpJ3gp3JxuHIIvr8vRMVXw5dNT7sqlHeAI'; // 스프레드시트 키
-  const sheetName = 'Smore-ResultSheet'; // 시트 이름
-
-  // 쿼리 작성 (모든 열 선택)
-  const query = encodeURIComponent('SELECT *');
-
-  // 데이터 요청 URL 생성
-  const url = `https://docs.google.com/spreadsheets/d/${spreadsheetKey}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tq=${query}`;
-
-  // Google Visualization Query 객체 생성
-  const queryObj = new google.visualization.Query(url);
-
-  // 쿼리 전송 및 콜백 함수 지정
-  queryObj.send(function(response) {
-    if (response.isError()) {
-      console.error('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
-      alert('데이터를 가져오는 중 오류가 발생했습니다.');
-      return;
-    } else {
-      callback(response);
-    }
-  });
-}
-
 // 페이지 로드 시 실행
 document.addEventListener('DOMContentLoaded', function() {
-  // Google Visualization API 로드
-  google.charts.load('current', { packages: [] });
-
-  // API 로드 후 데이터 가져오기 시작
-  google.charts.setOnLoadCallback(function() {
-    fetchData(processSpreadsheetData);
-  });
+  fetchData(processSpreadsheetData);
 });

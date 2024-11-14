@@ -5,16 +5,20 @@ function getTokenFromURL() {
 }
 
 // 데이터 처리 및 그래프 업데이트
-function processSpreadsheetData(gData) {
+function processSpreadsheetData(response) {
   const token = getTokenFromURL();
   if (!token) {
     alert('유효한 토큰이 필요합니다.');
     return;
   }
 
-  const table = gData.table;
-  const headers = table.cols.map(col => col.label);
-  const rows = table.rows;
+  const dataTable = response.getDataTable();
+
+  // 열 이름 가져오기
+  const headers = [];
+  for (let i = 0; i < dataTable.getNumberOfColumns(); i++) {
+    headers.push(dataTable.getColumnLabel(i));
+  }
 
   const tokenIndex = headers.indexOf('Token');
   if (tokenIndex === -1) {
@@ -24,16 +28,15 @@ function processSpreadsheetData(gData) {
 
   // 토큰에 해당하는 행 찾기
   let targetRow = null;
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i].c;
-    const cellValue = row[tokenIndex] ? row[tokenIndex].v : '';
+  for (let i = 0; i < dataTable.getNumberOfRows(); i++) {
+    const cellValue = dataTable.getValue(i, tokenIndex);
     if (cellValue === token) {
-      targetRow = row;
+      targetRow = i;
       break;
     }
   }
 
-  if (!targetRow) {
+  if (targetRow === null) {
     alert('토큰에 해당하는 데이터를 찾을 수 없습니다.');
     return;
   }
@@ -44,9 +47,9 @@ function processSpreadsheetData(gData) {
   const problemResultIndex = headers.indexOf('probleresult');
 
   // 점수 값 가져오기
-  const controlFailScore = parseInt(targetRow[controlFailIndex].v);
-  const salienceScore = parseInt(targetRow[salienceIndex].v);
-  const problemResultScore = parseInt(targetRow[problemResultIndex].v);
+  const controlFailScore = parseInt(dataTable.getValue(targetRow, controlFailIndex));
+  const salienceScore = parseInt(dataTable.getValue(targetRow, salienceIndex));
+  const problemResultScore = parseInt(dataTable.getValue(targetRow, problemResultIndex));
 
   // 각 점수의 퍼센트 계산
   const controlFailPercent = ((controlFailScore - 3) / (12 - 3)) * 100;
@@ -107,17 +110,25 @@ function fetchData(callback) {
   const spreadsheetKey = '1ESc7JIag5FpJ3gp3JxuHIIvr8vRMVXw5dNT7sqlHeAI'; // 스프레드시트 키
   const sheetName = 'Smore-ResultSheet'; // 시트 이름
 
+  // 쿼리 작성 (모든 열 선택)
   const query = encodeURIComponent('SELECT *');
-  const url = `https://docs.google.com/spreadsheets/d/${spreadsheetKey}/gviz/tq?sheet=${sheetName}&tq=${query}&tqx=out:json&callback=processData`;
 
-  // processData 함수를 전역 범위에 정의
-  window.processData = function(gData) {
-    callback(gData);
-  };
+  // 데이터 요청 URL 생성
+  const url = `https://docs.google.com/spreadsheets/d/${spreadsheetKey}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tq=${query}`;
 
-  const script = document.createElement('script');
-  script.src = url;
-  document.body.appendChild(script);
+  // Google Visualization Query 객체 생성
+  const queryObj = new google.visualization.Query(url);
+
+  // 쿼리 전송 및 콜백 함수 지정
+  queryObj.send(function(response) {
+    if (response.isError()) {
+      console.error('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+      alert('데이터를 가져오는 중 오류가 발생했습니다.');
+      return;
+    } else {
+      callback(response);
+    }
+  });
 }
 
 // 페이지 로드 시 실행

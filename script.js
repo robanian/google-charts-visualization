@@ -1,25 +1,7 @@
-// script.js
-
 // URL에서 token 파라미터 추출
 function getTokenFromURL() {
   const params = new URLSearchParams(window.location.search);
   return params.get('token');
-}
-
-// 스프레드시트 데이터 가져오기
-function fetchData(callback) {
-  const spreadsheetKey = '1ESc7JIag5FpJ3gp3JxuHIIvr8vRMVXw5dNT7sqlHeAI'; // 스프레드시트 키로 대체
-  const sheetName = 'Smore-ResultSheet'; // 시트 이름으로 대체
-
-  const url = `https://spreadsheets.google.com/tq?tqx=out:json&sheet=${sheetName}&key=${spreadsheetKey}`;
-
-  const script = document.createElement('script');
-  script.src = url + '&tq&callback=processData';
-  document.body.appendChild(script);
-
-  window.processData = function(gData) {
-    callback(gData);
-  };
 }
 
 // 데이터 처리 및 그래프 업데이트
@@ -100,10 +82,10 @@ function drawGraphs() {
     const maxBarWidth = graphCellWidth - 15; // 오른쪽에 15px 여백 남기기
 
     // 최소 및 최대 바 너비 설정
-    const minBarWidth = maxBarWidth * 0.23; // 필요에 따라 조정
+    const minBarWidth = maxBarWidth * 0.5; // 필요에 따라 조정
     const maxBarWidthAdjusted = maxBarWidth;
 
-    const minPercentage = 25;
+    const minPercentage = 0;
     const maxPercentage = 100;
 
     // 퍼센트 값을 0과 1 사이로 정규화
@@ -120,7 +102,31 @@ function drawGraphs() {
   });
 }
 
+// 스프레드시트 데이터 가져오기
+function fetchData(callback) {
+  const spreadsheetKey = '1ESc7JIag5FpJ3gp3JxuHIIvr8vRMVXw5dNT7sqlHeAI'; // 스프레드시트 키
+  const sheetName = 'Smore-ResultSheet'; // 시트 이름
+
+  const query = encodeURIComponent('SELECT *');
+  const url = `https://docs.google.com/spreadsheets/d/${spreadsheetKey}/gviz/tq?sheet=${sheetName}&tq=${query}&tqx=out:json&callback=processData`;
+
+  // processData 함수를 전역 범위에 정의
+  window.processData = function(gData) {
+    callback(gData);
+  };
+
+  const script = document.createElement('script');
+  script.src = url;
+  document.body.appendChild(script);
+}
+
 // 페이지 로드 시 실행
 document.addEventListener('DOMContentLoaded', function() {
-  fetchData(processSpreadsheetData);
+  // Google Visualization API 로드
+  google.charts.load('current', { packages: [] });
+
+  // API 로드 후 데이터 가져오기 시작
+  google.charts.setOnLoadCallback(function() {
+    fetchData(processSpreadsheetData);
+  });
 });

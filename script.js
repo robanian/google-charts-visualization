@@ -42,27 +42,35 @@ function processSpreadsheetData(rows) {
   const salienceScore = parseInt(targetRow.salience);
   const problemResultScore = parseInt(targetRow.probleresult);
 
-  // 각 점수의 퍼센트 계산
-  const controlFailPercent = ((controlFailScore - 3) / (12 - 3)) * 100;
-  const saliencePercent = ((salienceScore - 3) / (12 - 3)) * 100;
-  const problemResultPercent = ((problemResultScore - 4) / (16 - 4)) * 100;
+  // 각 점수의 퍼센트 계산 (수정된 부분)
+  const controlFailPercent = ((controlFailScore - 3) / (12 - 3)) * 75 + 25;
+  const saliencePercent = ((salienceScore - 3) / (12 - 3)) * 75 + 25;
+  const problemResultPercent = ((problemResultScore - 4) / (16 - 4)) * 75 + 25;
+
+  // 퍼센트 값을 25%~100% 사이로 제한
+  const clamp = (value) => Math.max(25, Math.min(100, value));
+
+  const controlFailPercentClamped = clamp(controlFailPercent);
+  const saliencePercentClamped = clamp(saliencePercent);
+  const problemResultPercentClamped = clamp(problemResultPercent);
 
   // 그래프 바 및 라벨 업데이트
   const controlFailBar = document.querySelector('.bar-controlfail');
   const salienceBar = document.querySelector('.bar-salience');
   const problemResultBar = document.querySelector('.bar-probleresult');
 
-  controlFailBar.setAttribute('data-percentage', controlFailPercent.toFixed(0));
-  salienceBar.setAttribute('data-percentage', saliencePercent.toFixed(0));
-  problemResultBar.setAttribute('data-percentage', problemResultPercent.toFixed(0));
+  controlFailBar.setAttribute('data-percentage', controlFailPercentClamped.toFixed(0));
+  salienceBar.setAttribute('data-percentage', saliencePercentClamped.toFixed(0));
+  problemResultBar.setAttribute('data-percentage', problemResultPercentClamped.toFixed(0));
 
-  controlFailBar.querySelector('.percent-label').innerText = `${controlFailPercent.toFixed(0)}%`;
-  salienceBar.querySelector('.percent-label').innerText = `${saliencePercent.toFixed(0)}%`;
-  problemResultBar.querySelector('.percent-label').innerText = `${problemResultPercent.toFixed(0)}%`;
+  controlFailBar.querySelector('.percent-label').innerText = `${controlFailPercentClamped.toFixed(0)}%`;
+  salienceBar.querySelector('.percent-label').innerText = `${saliencePercentClamped.toFixed(0)}%`;
+  problemResultBar.querySelector('.percent-label').innerText = `${problemResultPercentClamped.toFixed(0)}%`;
 
   // 그래프 다시 그리기
   drawGraphs();
 }
+
 
 // 그래프 그리기 함수 (기존과 동일)
 function drawGraphs() {

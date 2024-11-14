@@ -76,10 +76,10 @@ function drawGraphs() {
     const maxBarWidth = graphCellWidth - 15; // 오른쪽에 15px 여백 남기기
 
     // 최소 및 최대 바 너비 설정
-    const minBarWidth = maxBarWidth * 0.5; // 필요에 따라 조정
+    const minBarWidth = maxBarWidth * 0.23; // 필요에 따라 조정
     const maxBarWidthAdjusted = maxBarWidth;
 
-    const minPercentage = 0;
+    const minPercentage = 25;
     const maxPercentage = 100;
 
     // 퍼센트 값을 0과 1 사이로 정규화

@@ -4,53 +4,80 @@
     <meta charset="UTF-8">
     <title>그래프로 보는 나의 스마트폰 과의존 척도 해석</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Google Charts 로드 -->
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
-    <div class="container">
-        <!-- 타이틀 -->
-        <div class="title">
-            그래프로 보는 나의 스마트폰 과의존 척도 해석
-        </div>
-        
-        <!-- 그래프 섹션 -->
-        <div class="graphs">
-            <div class="graph-item">
-                <div class="graph-title">
-                    조절 실패 <span class="sub">1요인</span>
+    <table class="data-table">
+        <!-- 1행: 타이틀 (1열과 2열 합침) -->
+        <tr>
+            <td class="title-cell" colspan="2">그래프로 보는 나의 스마트폰 과의존 척도 해석</td>
+        </tr>
+        <!-- 2행: 조절 실패 -->
+        <tr>
+            <td class="factor-cell">
+                조절 실패<br><span class="sub">1요인</span>
+            </td>
+            <td class="graph-cell">
+                <div class="bar-container">
+                    <div class="bar bar-controlfail" id="controlfail-bar"></div>
+                    <span class="percent-label" id="controlfail-percent">50%</span>
                 </div>
-                <div id="controlfail-chart" class="chart"></div>
-            </div>
-            <div class="graph-item">
-                <div class="graph-title">
-                    현저성 <span class="sub">2요인</span>
+            </td>
+        </tr>
+        <!-- 3행: 현저성 -->
+        <tr>
+            <td class="factor-cell">
+                현저성<br><span class="sub">2요인</span>
+            </td>
+            <td class="graph-cell">
+                <div class="bar-container">
+                    <div class="bar bar-salience" id="salience-bar"></div>
+                    <span class="percent-label" id="salience-percent">70%</span>
                 </div>
-                <div id="salience-chart" class="chart"></div>
-            </div>
-            <div class="graph-item">
-                <div class="graph-title">
-                    문제적 결과 <span class="sub">3요인</span>
+            </td>
+        </tr>
+        <!-- 4행: 문제적 결과 -->
+        <tr>
+            <td class="factor-cell">
+                문제적 결과<br><span class="sub">3요인</span>
+            </td>
+            <td class="graph-cell">
+                <div class="bar-container">
+                    <div class="bar bar-probleresult" id="probleresult-bar"></div>
+                    <span class="percent-label" id="probleresult-percent">80%</span>
                 </div>
-                <div id="probleresult-chart" class="chart"></div>
-            </div>
-        </div>
-        
-        <!-- 범례 -->
-        <div class="legend">
-            <span class="legend-item" style="background-color: rgba(255, 108, 108, 1.00);"></span> 전혀 그렇지 않다.(0~24%)
-            <span class="legend-item" style="background-color: rgba(255, 108, 108, 0.75);"></span> 그렇지 않다.(25~50%)
-            <span class="legend-item" style="background-color: rgba(255, 108, 108, 0.5);"></span> 그렇다.(51~70%)
-            <span class="legend-item" style="background-color: rgba(255, 108, 108, 0.25);"></span> 항상 그렇다.(71~100%)
-        </div>
-        
-        <!-- 설명 -->
-        <div class="description">
-            • <span class="description-bold">조절 실패</span>: 이용자의 주관적 목표 대비 스마트폰 이용에 대한 자율적 조절 능력이 떨어지는 것<br>
-            • <span class="description-bold">현저성</span>: 이용자의 주관적 목표 대비 스마트폰 이용에 대한 자율적 조절 능력이 떨어지는 것<br>
-            • <span class="description-bold">문제적 결과</span>: 스마트폰 이용으로 인해 신체적, 심리적, 사회적으로 부정적인 결과를 경험함에도 불구하고 스마트폰을 지속적으로 이용하는 것
-        </div>
-    </div>
+            </td>
+        </tr>
+        <!-- 5행: 빈 셀과 범례 -->
+        <tr>
+            <td class="empty-cell"></td>
+            <td class="legend-cell">
+                <div class="legend-item">
+                    <span class="legend-color" style="background-color: rgba(255, 108, 108, 1.00);"></span>
+                    전혀 그렇지 않다.(0~24%)
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background-color: rgba(255, 108, 108, 0.75);"></span>
+                    그렇지 않다.(25~50%)
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background-color: rgba(255, 108, 108, 0.5);"></span>
+                    그렇다.(51~70%)
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background-color: rgba(255, 108, 108, 0.25);"></span>
+                    항상 그렇다.(71~100%)
+                </div>
+            </td>
+        </tr>
+        <!-- 6행: 설명 (1열과 2열 합침) -->
+        <tr>
+            <td class="description-cell" colspan="2">
+                • <span class="description-bold">조절 실패</span>: 이용자의 주관적 목표 대비 스마트폰 이용에 대한 자율적 조절 능력이 떨어지는 것<br>
+                • <span class="description-bold">현저성</span>: 이용자의 주관적 목표 대비 스마트폰 이용에 대한 자율적 조절 능력이 떨어지는 것<br>
+                • <span class="description-bold">문제적 결과</span>: 스마트폰 이용으로 인해 신체적, 심리적, 사회적으로 부정적인 결과를 경험함에도 불구하고 스마트폰을 지속적으로 이용하는 것
+            </td>
+        </tr>
+    </table>
     
     <!-- JavaScript 파일 로드 -->
     <script src="script.js"></script>

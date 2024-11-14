@@ -1,9 +1,5 @@
 // script.js
 
-// Google Charts 로드
-google.charts.load('current', { packages: ['corechart'] });
-google.charts.setOnLoadCallback(initialize);
-
 // 초기화 함수
 function initialize() {
     const token = getToken(); // 토큰 가져오기
@@ -11,7 +7,7 @@ function initialize() {
         fetchData(token)
             .then(data => {
                 if (data) {
-                    renderCharts(data);
+                    renderBars(data);
                 } else {
                     showError('해당 토큰에 대한 데이터를 찾을 수 없습니다.');
                 }
@@ -25,10 +21,10 @@ function initialize() {
     }
 }
 
-// 토큰을 가져오는 함수 (예: URL 파라미터)
+// 토큰을 가져오는 함수 (URL 파라미터)
 function getToken() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('token'); // 예: ?token=odSJyYaj0OcdRHAD
+    return params.get('token'); // 예: ?token=Og8fcbwFzQ7dc5Ql
 }
 
 // 데이터 가져오기 함수 (Google Visualization API 사용)
@@ -44,17 +40,17 @@ function fetchData(token) {
                 return;
             }
 
-            const data = response.getDataTable();
-            const numRows = data.getNumberOfRows();
-            const tokenColumnIndex = data.getColumnIndex('Token');
+            const dataTable = response.getDataTable();
+            const numRows = dataTable.getNumberOfRows();
+            const tokenColumnIndex = dataTable.getColumnIndex('Token');
 
             for (let i = 0; i < numRows; i++) {
-                const currentToken = data.getValue(i, tokenColumnIndex);
+                const currentToken = dataTable.getValue(i, tokenColumnIndex);
                 if (currentToken === token) {
                     const row = {};
-                    for (let j = 0; j < data.getNumberOfColumns(); j++) {
-                        const columnName = data.getColumnLabel(j);
-                        row[columnName] = data.getValue(i, j);
+                    for (let j = 0; j < dataTable.getNumberOfColumns(); j++) {
+                        const columnName = dataTable.getColumnLabel(j);
+                        row[columnName] = dataTable.getValue(i, j);
                     }
                     resolve(row);
                     return;
@@ -67,8 +63,8 @@ function fetchData(token) {
     });
 }
 
-// 그래프 그리기 함수
-function renderCharts(data) {
+// 그래프 그리기 함수 (가로 막대)
+function renderBars(data) {
     const controlfail = parseInt(data.controlfail, 10);
     const salience = parseInt(data.salience, 10);
     const probleresult = parseInt(data.probleresult, 10);
@@ -78,51 +74,36 @@ function renderCharts(data) {
     const saliencePercent = mapToPercent(salience, 3, 12);
     const probleresultPercent = mapToPercent(probleresult, 4, 16);
 
-    // 차트 데이터 준비
-    const chartsData = [
-        { id: 'controlfail-chart', value: controlfailPercent, color: '#FF6C6C', label: '조절 실패' },
-        { id: 'salience-chart', value: saliencePercent, color: '#54CA95', label: '현저성' },
-        { id: 'probleresult-chart', value: probleresultPercent, color: '#2F7EFF', label: '문제적 결과' },
-    ];
+    // 막대 업데이트
+    updateBar('controlfail-bar', controlfailPercent);
+    updateBar('salience-bar', saliencePercent);
+    updateBar('probleresult-bar', probleresultPercent);
 
-    chartsData.forEach(chart => {
-        drawChart(chart.id, chart.value, chart.color, chart.label);
-    });
+    // 퍼센트 라벨 업데이트
+    document.getElementById('controlfail-percent').textContent = `${controlfailPercent}%`;
+    document.getElementById('salience-percent').textContent = `${saliencePercent}%`;
+    document.getElementById('probleresult-percent').textContent = `${probleresultPercent}%`;
 }
 
-// 퍼센트 매핑 함수
+// 퍼센트 매핑 함수 (점수를 25~100%로 변환)
 function mapToPercent(score, min, max) {
     if (score < min) score = min;
     if (score > max) score = max;
-    return 25 + ((score - min) / (max - min)) * 75;
+    return Math.round(25 + ((score - min) / (max - min)) * 75);
 }
 
-// 차트 그리기 함수
-function drawChart(elementId, percent, color, label) {
-    const data = google.visualization.arrayToDataTable([
-        ['Label', 'Value'],
-        [label, percent],
-        ['', 100 - percent]
-    ]);
-
-    const options = {
-        pieHole: 0.8,
-        pieSliceText: 'none',
-        tooltip: { trigger: 'none' },
-        backgroundColor: 'transparent',
-        slices: {
-            0: { color: color },
-            1: { color: '#EEEEEE' }
-        },
-        chartArea: { width: '100%', height: '100%' }
-    };
-
-    const chart = new google.visualization.PieChart(document.getElementById(elementId));
-    chart.draw(data, options);
+// 막대 업데이트 함수
+function updateBar(barId, percent) {
+    const bar = document.getElementById(barId);
+    bar.style.width = `${percent}%`;
 }
 
 // 에러 표시 함수
 function showError(message) {
-    const container = document.querySelector('.container');
-    container.innerHTML = `<div class="error">${message}</div>`;
+    const container = document.querySelector('.data-table');
+    container.innerHTML = `<tr><td colspan="2" class="error">${message}</td></tr>`;
 }
+
+// Google Charts 로드 후 초기화 호출
+google.charts.load('current', { packages: ['corechart'] });
+google.charts.setOnLoadCallback(initialize);

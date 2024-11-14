@@ -1,109 +1,126 @@
 // script.js
 
-// 초기화 함수
-function initialize() {
-    const token = getToken(); // 토큰 가져오기
-    if (token) {
-        fetchData(token)
-            .then(data => {
-                if (data) {
-                    renderBars(data);
-                } else {
-                    showError('해당 토큰에 대한 데이터를 찾을 수 없습니다.');
-                }
-            })
-            .catch(error => {
-                console.error('데이터 가져오기 에러:', error);
-                showError('데이터를 불러오는 중 오류가 발생했습니다.');
-            });
-    } else {
-        showError('토큰이 제공되지 않았습니다.');
+// URL에서 token 파라미터 추출
+function getTokenFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('token');
+}
+
+// 스프레드시트 데이터 가져오기
+function fetchData(callback) {
+  const spreadsheetKey = '1ESc7JIag5FpJ3gp3JxuHIIvr8vRMVXw5dNT7sqlHeAI'; // 스프레드시트 키로 대체
+  const sheetName = 'Smore-ResultSheet'; // 시트 이름으로 대체
+
+  const url = `https://spreadsheets.google.com/tq?tqx=out:json&sheet=${sheetName}&key=${spreadsheetKey}`;
+
+  const script = document.createElement('script');
+  script.src = url + '&tq&callback=processData';
+  document.body.appendChild(script);
+
+  window.processData = function(gData) {
+    callback(gData);
+  };
+}
+
+// 데이터 처리 및 그래프 업데이트
+function processSpreadsheetData(gData) {
+  const token = getTokenFromURL();
+  if (!token) {
+    alert('유효한 토큰이 필요합니다.');
+    return;
+  }
+
+  const table = gData.table;
+  const headers = table.cols.map(col => col.label);
+  const rows = table.rows;
+
+  const tokenIndex = headers.indexOf('Token');
+  if (tokenIndex === -1) {
+    alert('Token 열을 찾을 수 없습니다.');
+    return;
+  }
+
+  // 토큰에 해당하는 행 찾기
+  let targetRow = null;
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i].c;
+    const cellValue = row[tokenIndex] ? row[tokenIndex].v : '';
+    if (cellValue === token) {
+      targetRow = row;
+      break;
     }
+  }
+
+  if (!targetRow) {
+    alert('토큰에 해당하는 데이터를 찾을 수 없습니다.');
+    return;
+  }
+
+  // 각 점수의 인덱스 찾기
+  const controlFailIndex = headers.indexOf('controlfail');
+  const salienceIndex = headers.indexOf('salience');
+  const problemResultIndex = headers.indexOf('probleresult');
+
+  // 점수 값 가져오기
+  const controlFailScore = parseInt(targetRow[controlFailIndex].v);
+  const salienceScore = parseInt(targetRow[salienceIndex].v);
+  const problemResultScore = parseInt(targetRow[problemResultIndex].v);
+
+  // 각 점수의 퍼센트 계산
+  const controlFailPercent = ((controlFailScore - 3) / (12 - 3)) * 100;
+  const saliencePercent = ((salienceScore - 3) / (12 - 3)) * 100;
+  const problemResultPercent = ((problemResultScore - 4) / (16 - 4)) * 100;
+
+  // 그래프 바 및 라벨 업데이트
+  const controlFailBar = document.querySelector('.bar-controlfail');
+  const salienceBar = document.querySelector('.bar-salience');
+  const problemResultBar = document.querySelector('.bar-probleresult');
+
+  controlFailBar.setAttribute('data-percentage', controlFailPercent.toFixed(0));
+  salienceBar.setAttribute('data-percentage', saliencePercent.toFixed(0));
+  problemResultBar.setAttribute('data-percentage', problemResultPercent.toFixed(0));
+
+  controlFailBar.querySelector('.percent-label').innerText = `${controlFailPercent.toFixed(0)}%`;
+  salienceBar.querySelector('.percent-label').innerText = `${saliencePercent.toFixed(0)}%`;
+  problemResultBar.querySelector('.percent-label').innerText = `${problemResultPercent.toFixed(0)}%`;
+
+  // 그래프 다시 그리기
+  drawGraphs();
 }
 
-// 토큰을 가져오는 함수 (URL 파라미터)
-function getToken() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('token'); // 예: ?token=Og8fcbwFzQ7dc5Ql
+// 그래프 그리기 함수
+function drawGraphs() {
+  const bars = document.querySelectorAll('.bar-common');
+
+  bars.forEach(function(bar) {
+    const percentage = parseFloat(bar.getAttribute('data-percentage'));
+
+    // 그래프 셀의 너비 가져오기
+    const graphCellWidth = bar.parentElement.offsetWidth;
+    const maxBarWidth = graphCellWidth - 15; // 오른쪽에 15px 여백 남기기
+
+    // 최소 및 최대 바 너비 설정
+    const minBarWidth = maxBarWidth * 0.23; // 필요에 따라 조정
+    const maxBarWidthAdjusted = maxBarWidth;
+
+    const minPercentage = 25;
+    const maxPercentage = 100;
+
+    // 퍼센트 값을 0과 1 사이로 정규화
+    const normalizedPercentage = (percentage - minPercentage) / (maxPercentage - minPercentage);
+
+    // 비선형 스케일링 적용
+    const scaledPercentage = Math.pow(normalizedPercentage, 0.7);
+
+    // 바의 실제 너비 계산
+    const width = minBarWidth + scaledPercentage * (maxBarWidthAdjusted - minBarWidth);
+
+    // 계산된 너비를 바에 적용
+    bar.style.width = width + 'px';
+  });
 }
 
-// 데이터 가져오기 함수 (Google Visualization API 사용)
-function fetchData(token) {
-    return new Promise((resolve, reject) => {
-        const sheetId = '1ESc7JIag5FpJ3gp3JxuHIIvr8vRMVXw5dNT7sqlHeAI'; // 본인의 시트 ID로 교체
-        const query = new google.visualization.Query(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=Smore-ResultSheet`);
-
-        query.send(response => {
-            if (response.isError()) {
-                console.error('Query Error:', response.getMessage(), response.getDetailedMessage());
-                reject(new Error('Google Visualization API 쿼리 오류'));
-                return;
-            }
-
-            const dataTable = response.getDataTable();
-            const numRows = dataTable.getNumberOfRows();
-            const tokenColumnIndex = dataTable.getColumnIndex('Token');
-
-            for (let i = 0; i < numRows; i++) {
-                const currentToken = dataTable.getValue(i, tokenColumnIndex);
-                if (currentToken === token) {
-                    const row = {};
-                    for (let j = 0; j < dataTable.getNumberOfColumns(); j++) {
-                        const columnName = dataTable.getColumnLabel(j);
-                        row[columnName] = dataTable.getValue(i, j);
-                    }
-                    resolve(row);
-                    return;
-                }
-            }
-
-            // 토큰을 찾지 못한 경우
-            resolve(null);
-        });
-    });
-}
-
-// 그래프 그리기 함수 (가로 막대)
-function renderBars(data) {
-    const controlfail = parseInt(data.controlfail, 10);
-    const salience = parseInt(data.salience, 10);
-    const probleresult = parseInt(data.probleresult, 10);
-
-    // 퍼센트 계산
-    const controlfailPercent = mapToPercent(controlfail, 3, 12);
-    const saliencePercent = mapToPercent(salience, 3, 12);
-    const probleresultPercent = mapToPercent(probleresult, 4, 16);
-
-    // 막대 업데이트
-    updateBar('controlfail-bar', controlfailPercent);
-    updateBar('salience-bar', saliencePercent);
-    updateBar('probleresult-bar', probleresultPercent);
-
-    // 퍼센트 라벨 업데이트
-    document.getElementById('controlfail-percent').textContent = `${controlfailPercent}%`;
-    document.getElementById('salience-percent').textContent = `${saliencePercent}%`;
-    document.getElementById('probleresult-percent').textContent = `${probleresultPercent}%`;
-}
-
-// 퍼센트 매핑 함수 (점수를 25~100%로 변환)
-function mapToPercent(score, min, max) {
-    if (score < min) score = min;
-    if (score > max) score = max;
-    return Math.round(25 + ((score - min) / (max - min)) * 75);
-}
-
-// 막대 업데이트 함수
-function updateBar(barId, percent) {
-    const bar = document.getElementById(barId);
-    bar.style.width = `${percent}%`;
-}
-
-// 에러 표시 함수
-function showError(message) {
-    const container = document.querySelector('.data-table');
-    container.innerHTML = `<tr><td colspan="2" class="error">${message}</td></tr>`;
-}
-
-// Google Charts 로드 후 초기화 호출
-google.charts.load('current', { packages: ['corechart'] });
-google.charts.setOnLoadCallback(initialize);
+// 페이지 로드 시 실행
+document.addEventListener('DOMContentLoaded', function() {
+  fetchData(processSpreadsheetData);
+});

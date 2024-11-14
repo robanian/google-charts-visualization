@@ -1,9 +1,24 @@
 /* styles.css */
 
+/* 커스텀 폰트 적용 */
+@font-face {
+    font-family: 'Pretendard';
+    src: url('fonts/Pretendard-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Pretendard';
+    src: url('fonts/Pretendard-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}
+/* 필요한 다른 폰트 웨이트도 동일하게 추가하세요 */
+
 /* 전체 페이지 스타일 */
 body {
     background-color: #FEFAE5;
-    font-family: Arial, sans-serif;
+    font-family: 'Pretendard';
     color: #543F2E;
     display: flex;
     justify-content: center;
@@ -17,141 +32,179 @@ body {
     width: 420px;
     height: 650px;
     border-collapse: collapse;
-    table-layout: fixed; /* 고정된 테이블 레이아웃 */
     background-color: #FFFFFF;
-    border: 1px solid #543F2E;
-    border-radius: 10px;
-    overflow: hidden; /* 경계선 내에 내용이 유지되도록 */
+    border: 2px solid #543F2E; /* 전체 테이블 외곽선 */
+    border-radius: 24px;
+    overflow: hidden; /* 경계선 내에 내용 유지 */
+    table-layout: fixed; /* 추가: 테이블 레이아웃 고정 */
 }
+
 
 /* 테이블 셀 공통 스타일 */
 .data-table td {
-    border: 1px solid #543F2E; /* 테두리 색상 */
-    padding: 10px;
+    border: 2px solid #543F2E; /* 셀 테두리 통일 */
     box-sizing: border-box;
     vertical-align: middle;
     position: relative;
+    font-family: 'Pretendard';
 }
 
 /* 타이틀 셀 스타일 */
 .title-cell {
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 21px;
+    font-weight: 800; /* Pretendard-ExtraBold */
     text-align: center;
-    background-color: #F5F5F5;
+    height: 95px;
+    padding: 10px;
+    word-wrap: break-word;
+}
+
+.title-sub {
+    font-weight: 400; /* Pretendard-Regular */
 }
 
 /* 요인 셀 스타일 */
 .factor-cell {
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
-    background-color: #FAFAFA;
+    font-size: 18px;
+    font-weight: 800; /* Pretendard-ExtraBold */
+    text-align: left;
+    width: 87px;
+    min-width: 87px; /* 추가 */
+    max-width: 87px; /* 추가 */
+    height: 101px;
+    padding: 0px 7px 0px 7px;
+    word-wrap: break-word;
+    box-sizing: border-box; /* 패딩을 포함한 너비 계산 */
 }
 
 /* 서브 텍스트 스타일 */
-.sub {
-    font-size: 14px;
-    font-weight: normal;
+.factor-sub {
+    font-size: 16px;
+    font-weight: 400; /* Pretendard-Regular */
     display: block;
     margin-top: 5px;
-    color: #777777;
 }
 
 /* 그래프 셀 스타일 */
 .graph-cell {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-}
-
-/* 막대 컨테이너 스타일 */
-.bar-container {
+    width: calc(100% - 87px);
+    height: 101px;
+    padding-left: 2px;
+    padding-right: 0px;
     position: relative;
-    width: 100%;
-    height: 30px;
-    background-color: #EEEEEE;
-    border-radius: 15px;
-    overflow: hidden;
+    box-sizing: border-box; /* 패딩을 포함한 너비 계산 */
 }
 
-/* 가로 막대 스타일 */
-.bar {
-    height: 100%;
-    border-radius: 15px 0 0 15px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    transition: width 0.5s ease-in-out;
+/* 그래프 바 스타일 */
+.bar-common {
+    position: relative;
+    max-width: 100%;
+    height: 55%;
+    border-radius: 0 40px 40px 0;
 }
 
 /* 각 요인에 따른 막대 색상 */
 .bar-controlfail {
-    background-color: #FF6C6C;
+    background-color: #FF8686; /* 배경색 설정 */
 }
 
 .bar-salience {
-    background-color: #54CA95;
+    background-color: #54CA95; /* 배경색 설정 */
 }
 
 .bar-probleresult {
-    background-color: #2F7EFF;
+    background-color: #2F7EFF; /* 배경색 설정 */
 }
 
 /* 퍼센트 라벨 스타일 */
 .percent-label {
     position: absolute;
-    right: 10px;
+    right: 10px; /* 우측에서 5px 띄우기 */
     top: 50%;
     transform: translateY(-50%);
-    font-weight: bold;
-    font-size: 14px;
+    font-weight: 800; /* Pretendard-ExtraBold */
+    font-size: 20px;
     color: #FFFFFF;
+    white-space: nowrap;
 }
 
 /* 빈 셀 스타일 */
 .empty-cell {
-    background-color: #FAFAFA;
+    width: 87px;
+    height: 53px;
+}
+
+/* legend-cell의 테두리 제거 */
+.data-table td.legend-cell {
+    border: none;
 }
 
 /* 범례 셀 스타일 */
 .legend-cell {
-    font-size: 12px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    align-items: center;
-    justify-content: flex-start;
-    height: 100%;
+    height: 53px;
     overflow: hidden; /* 내용이 넘칠 경우 숨김 */
+    white-space: nowrap;
+    justify-content: space-around;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
 }
 
 /* 범례 항목 스타일 */
 .legend-item {
     display: flex;
-    align-items: center;
-    gap: 5px;
-    white-space: nowrap;
+    flex-direction: column; /* 범례 설명과 범위를 세로로 배치 */
 }
 
-/* 범례 색상 박스 스타일 */
-.legend-color {
-    display: inline-block;
-    width: 15px;
-    height: 15px;
-    border-radius: 3px;
+/* 범례 설명 및 범위 스타일 */
+.font-legend-description {
+    font-weight: 800; /* Pretendard-Bold */
+	font-size: 11px;
+}
+
+.font-legend-range {
+    font-weight: 500; /* Pretendard-Medium */
+    font-size: 10px; /* 범위 텍스트 크기 조정 */
 }
 
 /* 설명 셀 스타일 */
 .description-cell {
     font-size: 14px;
     line-height: 1.5;
-    background-color: #FAFAFA;
+    width: 419px;
+    height: 205px;
+    padding: 10px;
+    font-weight: 400; /* Pretendard-Regular */
+    overflow-y: auto; /* 내용이 넘칠 경우 스크롤 */
 }
 
-/* 설명의 볼드 텍스트 스타일 */
+/* 설명 아이템 스타일 */
+.description-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.bullet-point {
+    margin-right: 5px;
+    font-weight: 800; /* Pretendard-ExtraBold */
+}
+
+.description-text {
+    text-align: left;
+}
+
 .description-bold {
-    font-weight: bold;
+    font-weight: 800; /* Pretendard-ExtraBold */
+}
+
+/* 에러 메시지 스타일 */
+.error {
+    color: red;
+    font-weight: 800; /* Pretendard-ExtraBold */
+    text-align: center;
+    padding: 20px;
 }
 
 /* 반응형 폰트 크기 조정 (필요시) */

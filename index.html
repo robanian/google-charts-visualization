@@ -7,76 +7,87 @@
 </head>
 <body>
     <table class="data-table">
+	    <!-- 열 그룹 정의 추가 -->
+        <colgroup>
+            <col style="width: 87px;">
+            <col style="width: calc(100% - 87px);">
+        </colgroup>
         <!-- 1행: 타이틀 (1열과 2열 합침) -->
         <tr>
-            <td class="title-cell" colspan="2">그래프로 보는 나의 스마트폰 과의존 척도 해석</td>
+            <td class="title-cell" colspan="2"><span class=title-sub>그래프로 보는</span> 나의 스마트폰 과의존 척도 해석</td>
         </tr>
-        <!-- 2행: 조절 실패 -->
-        <tr>
-            <td class="factor-cell">
-                조절 실패<br><span class="sub">1요인</span>
-            </td>
-            <td class="graph-cell">
-                <div class="bar-container">
-                    <div class="bar bar-controlfail" id="controlfail-bar"></div>
-                    <span class="percent-label" id="controlfail-percent">50%</span>
-                </div>
-            </td>
-        </tr>
-        <!-- 3행: 현저성 -->
-        <tr>
-            <td class="factor-cell">
-                현저성<br><span class="sub">2요인</span>
-            </td>
-            <td class="graph-cell">
-                <div class="bar-container">
-                    <div class="bar bar-salience" id="salience-bar"></div>
-                    <span class="percent-label" id="salience-percent">70%</span>
-                </div>
-            </td>
-        </tr>
-        <!-- 4행: 문제적 결과 -->
-        <tr>
-            <td class="factor-cell">
-                문제적 결과<br><span class="sub">3요인</span>
-            </td>
-            <td class="graph-cell">
-                <div class="bar-container">
-                    <div class="bar bar-probleresult" id="probleresult-bar"></div>
-                    <span class="percent-label" id="probleresult-percent">80%</span>
-                </div>
-            </td>
-        </tr>
+		<!-- 2행: 조절 실패 -->
+		<tr>
+			<td class="factor-cell">
+				조절 실패<br><span class="factor-sub">(1요인)</span>
+			</td>
+			<td class="graph-cell">
+				<div class="bar-common bar-controlfail" data-percentage="25">
+					<span class="percent-label">25%</span>
+				</div>
+			</td>
+		</tr>
+		<!-- 3행: 현저성 -->
+		<tr>
+			<td class="factor-cell">
+				현저성<br><span class="factor-sub">(2요인)</span>
+			</td>
+			<td class="graph-cell">
+				<div class="bar-common bar-salience" data-percentage="50">
+					<span class="percent-label">50%</span>
+				</div>
+			</td>
+		</tr>
+		<!-- 4행: 문제적 결과 -->
+		<tr>
+			<td class="factor-cell">
+				문제적<br>결과<br><span class="factor-sub">(3요인)</span>
+			</td>
+			<td class="graph-cell">
+				<div class="bar-common bar-probleresult" data-percentage="100">
+					<span class="percent-label">100%</span>
+				</div>
+			</td>
+		</tr>
         <!-- 5행: 빈 셀과 범례 -->
         <tr>
             <td class="empty-cell"></td>
             <td class="legend-cell">
                 <div class="legend-item">
-                    <span class="legend-color" style="background-color: rgba(255, 108, 108, 1.00);"></span>
-                    전혀 그렇지 않다.(0~24%)
+                    <span class="font-legend-description">전혀 그렇지 않다.</span>
+                    <span class="font-legend-range">(0~24%)</span>
                 </div>
                 <div class="legend-item">
-                    <span class="legend-color" style="background-color: rgba(255, 108, 108, 0.75);"></span>
-                    그렇지 않다.(25~50%)
+                    <span class="font-legend-description">그렇지 않다.</span>
+                    <span class="font-legend-range">(25~50%)</span>
                 </div>
                 <div class="legend-item">
-                    <span class="legend-color" style="background-color: rgba(255, 108, 108, 0.5);"></span>
-                    그렇다.(51~70%)
+                    <span class="font-legend-description">그렇다.</span>
+                    <span class="font-legend-range">(51~70%)</span>
                 </div>
                 <div class="legend-item">
-                    <span class="legend-color" style="background-color: rgba(255, 108, 108, 0.25);"></span>
-                    항상 그렇다.(71~100%)
+                    <span class="font-legend-description">항상 그렇다.</span>
+                    <span class="font-legend-range">(71~100%)</span>
                 </div>
             </td>
         </tr>
-        <!-- 6행: 설명 (1열과 2열 합침) -->
-        <tr>
-            <td class="description-cell" colspan="2">
-                • <span class="description-bold">조절 실패</span>: 이용자의 주관적 목표 대비 스마트폰 이용에 대한 자율적 조절 능력이 떨어지는 것<br>
-                • <span class="description-bold">현저성</span>: 이용자의 주관적 목표 대비 스마트폰 이용에 대한 자율적 조절 능력이 떨어지는 것<br>
-                • <span class="description-bold">문제적 결과</span>: 스마트폰 이용으로 인해 신체적, 심리적, 사회적으로 부정적인 결과를 경험함에도 불구하고 스마트폰을 지속적으로 이용하는 것
-            </td>
-        </tr>
+		<!-- 6행: 설명 (1열과 2열 합침) -->
+		<tr>
+			<td class="description-cell" colspan="2">
+				<div class="description-item">
+					<span class="bullet-point">•</span>
+					<span class="description-text"><span class="description-bold">조절 실패</span>: 이용자의 주관적 목표 대비 스마트폰 이용에 대한 자율적 조절 능력이 떨어지는 것</span>
+				</div>
+				<div class="description-item">
+					<span class="bullet-point">•</span>
+					<span class="description-text"><span class="description-bold">현저성</span>: 이용자의 주관적 목표 대비 스마트폰 이용에 대한 자율적 조절 능력이 떨어지는 것</span>
+				</div>
+				<div class="description-item">
+					<span class="bullet-point">•</span>
+					<span class="description-text"><span class="description-bold">문제적 결과</span>: 스마트폰 이용으로 인해 신체적, 심리적, 사회적으로 부정적인 결과를 경험함에도 불구하고 스마트폰을 지속적으로 이용하는 것</span>
+				</div>
+			</td>
+		</tr>
     </table>
     
     <!-- JavaScript 파일 로드 -->

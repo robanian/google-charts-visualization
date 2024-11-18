@@ -4,15 +4,23 @@
     <meta charset="UTF-8">
     <title>그래프로 보는 나의 스마트폰 과의존 척도 해석</title>
     <link rel="stylesheet" href="styles.css">
-	
-	<!-- Google Visualization API 로드 -->
-	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-	
-	<!-- PapaParse 라이브러리 추가 -->
-	<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 </head>
 <body>
-	<div class="container">
+	<!-- 로딩 메시지 표시 영역 -->
+	<div id="loading-message" style="text-align: center; margin-top: 20px;">
+		<div class="spinner"></div>
+		<div class="loading-text">
+			그래프를 예쁘게 만들고 있어요<span id="loading-dots"></span>
+		</div>
+	</div>
+	
+	<!-- 에러 메시지 표시 영역 -->
+	<div id="error-message" style="display: none; color: red; font-weight: bold; text-align: center; margin-top: 20px;">
+		죄송합니다. 해당하는 결과를 찾을 수 없어요!
+	</div>
+
+	<!-- 그래프 컨테이너 (초기에는 숨김) -->
+	<div id="graph-container" style="display: none;">
 		<table class="data-table">
 			<!-- 열 그룹 정의 추가 -->
 			<colgroup>
@@ -29,8 +37,8 @@
 					조절 실패<br><span class="factor-sub">(1요인)</span>
 				</td>
 				<td class="graph-cell">
-					<div class="bar-common bar-controlfail" data-percentage="25">
-						<span class="percent-label">25%</span>
+					<div class="bar-common bar-controlfail" data-percentage="0">
+						<span class="percent-label">0%</span>
 					</div>
 				</td>
 			</tr>
@@ -40,8 +48,8 @@
 					현저성<br><span class="factor-sub">(2요인)</span>
 				</td>
 				<td class="graph-cell">
-					<div class="bar-common bar-salience" data-percentage="50">
-						<span class="percent-label">50%</span>
+					<div class="bar-common bar-salience" data-percentage="0">
+						<span class="percent-label">0%</span>
 					</div>
 				</td>
 			</tr>
@@ -51,8 +59,8 @@
 					문제적<br>결과<br><span class="factor-sub">(3요인)</span>
 				</td>
 				<td class="graph-cell">
-					<div class="bar-common bar-probleresult" data-percentage="100">
-						<span class="percent-label">100%</span>
+					<div class="bar-common bar-probleresult" data-percentage="0">
+						<span class="percent-label">0%</span>
 					</div>
 				</td>
 			</tr>
@@ -96,7 +104,10 @@
 				</td>
 			</tr>
 		</table>
-    </div>
+	</div>
+	
+	<!-- PapaParse 라이브러리 추가 -->
+	<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 	
     <!-- JavaScript 파일 로드 -->
     <script src="script.js"></script>

@@ -15,36 +15,66 @@
 }
 /* 필요한 다른 폰트 웨이트도 동일하게 추가하세요 */
 
-/* 전체 페이지 스타일 */
-body {
-    margin: 0;
-    padding: 0;
-    background-color: #FEFAE5; /* 배경색 복원 */
-    display: flex; /* Flex 컨테이너 */
-    justify-content: center; /* 수평 중앙 정렬 */
-    align-items: center; /* 수직 중앙 정렬 */
-    min-height: 100vh; /* 화면 높이에 맞춤 */
+/* 로딩 스피너 스타일 */
+.spinner {
+  margin: 0 auto 20px auto;
+  width: 50px;
+  height: 50px;
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #543F2E;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-/* 컨테이너 스타일 */
-.container {
-    width: 420px;
-    height: 650px;
-    position: relative;
-    background-color: #FFFFFF;
-    border: 2px solid #543F2E;
-    border-radius: 24px; /* 라운드 적용 */
-    overflow: hidden;
-    box-sizing: border-box;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 로딩 텍스트 스타일 */
+.loading-text {
+  font-size: 24px;
+  color: #543F2E;
+  font-weight: bold;
+}
+
+#loading-dots {
+  display: inline-block;
+  margin-left: 5px;
+}
+
+/* 에러 메시지 스타일 */
+#error-message {
+    color: #543F2E; /* 로딩 메시지와 동일한 색상으로 변경 */
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 18px;
+}
+/* 전체 페이지 스타일 */
+body {
+    background-color: #FEFAE5;
+    font-family: 'Pretendard';
+    color: #543F2E;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* 전체 화면 높이 */
+    margin: 0;
 }
 
 /* 테이블 스타일 */
 .data-table {
-    width: 100%;
-    height: 100%;
+    width: 420px;
+    height: 650px;
     border-collapse: collapse;
-    table-layout: fixed;
+    background-color: #FFFFFF;
+    border: 2px solid #543F2E; /* 전체 테이블 외곽선 */
+    border-radius: 24px;
+    overflow: hidden; /* 경계선 내에 내용 유지 */
+    table-layout: fixed; /* 추가: 테이블 레이아웃 고정 */
 }
+
 
 /* 테이블 셀 공통 스타일 */
 .data-table td {
@@ -177,10 +207,11 @@ body {
 .description-cell {
     font-size: 14px;
     line-height: 1.5;
+    width: 419px;
+    height: 205px;
     padding: 10px;
     font-weight: 400; /* Pretendard-Regular */
-    overflow: hidden; /* 스크롤바 제거 */
-    height: calc(100% - 나머지 셀들의 높이 합계);
+    overflow-y: auto; /* 내용이 넘칠 경우 스크롤 */
 }
 
 /* 설명 아이템 스타일 */

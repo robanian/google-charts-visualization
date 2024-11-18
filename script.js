@@ -1,18 +1,18 @@
 // 에러 메시지를 표시할 함수
 function displayErrorMessage(message) {
-    const loadingMessage = document.getElementById('loading-message');
-    const errorContainer = document.getElementById('error-message');
-    const graphContainer = document.getElementById('graph-container');
+  const loadingMessage = document.getElementById('loading-message');
+  const errorContainer = document.getElementById('error-message');
+  const graphContainer = document.getElementById('graph-container');
 
-    // 로딩 메시지 숨김
-    loadingMessage.style.display = 'none';
+  // 로딩 메시지 숨김
+  loadingMessage.style.display = 'none';
 
-    // 에러 메시지 표시
-    errorContainer.textContent = message;
-    errorContainer.style.display = 'block';
+  // 에러 메시지 표시
+  errorContainer.textContent = message;
+  errorContainer.style.display = 'block';
 
-    // 그래프 컨테이너 숨김
-    graphContainer.style.display = 'none';
+  // 그래프 컨테이너 숨김
+  graphContainer.style.display = 'none';
 }
 
 // 그래프를 표시할 함수
@@ -33,14 +33,14 @@ function displayGraph() {
 
 // 로딩 메시지의 점 애니메이션 함수
 function animateLoadingDots() {
-    const loadingDots = document.getElementById('loading-dots');
-    const dotPatterns = ['...', '..', '.', '...','..','.']; // 수정된 패턴
-    let dotIndex = 0;
+  const loadingDots = document.getElementById('loading-dots');
+  const dotPatterns = ['...', '..', '.', '...', '..', '.']; // 원하는 패턴
+  let dotIndex = 0;
 
-    return setInterval(() => {
-        loadingDots.textContent = dotPatterns[dotIndex];
-        dotIndex = (dotIndex + 1) % dotPatterns.length;
-    }, 500);
+  return setInterval(() => {
+    loadingDots.textContent = dotPatterns[dotIndex];
+    dotIndex = (dotIndex + 1) % dotPatterns.length;
+  }, 500);
 }
 
 // URL에서 token 파라미터 추출
@@ -59,10 +59,11 @@ async function fetchData(callback) {
 
     // CSV 데이터 파싱
     const data = Papa.parse(csvText, { header: true });
-    callback(data.data);
+    callback(null, data.data);
   } catch (error) {
     console.error('Error fetching data:', error);
-    displayErrorMessage('데이터를 가져올 수 없습니다.');
+    // 에러를 콜백 함수로 전달하여 재시도 가능하도록 함
+    callback(error, null);
   }
 }
 
@@ -72,7 +73,7 @@ function processSpreadsheetData(rows) {
   console.log('Received token:', token); // 디버깅용
 
   if (!token || token === '{{ __UNSAFE_session_id__ }}') {
-    // 토큰이 없으면 다시 시도
+    // 토큰이 없으면 데이터 없음으로 처리
     return false;
   }
 
@@ -162,37 +163,46 @@ function drawGraphs() {
 
 // 페이지 로드 시 실행
 document.addEventListener('DOMContentLoaded', function() {
-    // 로딩 메시지의 점 애니메이션 시작
-    const dotsInterval = animateLoadingDots();
+  const startTime = Date.now(); // 페이지 로드 시점
 
-    // 3초 대기 후 데이터 로딩 시작
-    setTimeout(function() {
-        const startTime = Date.now();
-        const maxWaitTime = 10000; // 최대 10초 대기
+  // 로딩 메시지의 점 애니메이션 시작
+  const dotsInterval = animateLoadingDots();
 
-        // 데이터 로딩 및 체크 함수
-        const checkData = () => {
-            fetchData(function(rows) {
-                const dataFound = processSpreadsheetData(rows);
+	const initialDelay = 2000; // 초기 로딩 화면 대기 시간 (2초)
+	const dataCheckInterval = 1000; // 데이터 탐색 간격 (1초)
+	const maxTotalWaitTime = 10000; // 최대 전체 대기 시간 (10초)
 
-                if (dataFound) {
-                    // 데이터가 있으면 점 애니메이션 중지
-                    clearInterval(dotsInterval);
-                } else {
-                    // 아직 데이터가 없으면 최대 대기 시간 확인
-                    if (Date.now() - startTime < maxWaitTime) {
-                        // 2초 후 다시 시도
-                        setTimeout(checkData, 2000);
-                    } else {
-                        // 최대 대기 시간을 초과하면 에러 메시지 표시
-                        clearInterval(dotsInterval);
-                        displayErrorMessage('죄송합니다. 그래프를 제작할 수 없어요!');
-                    }
-                }
-            });
-        };
+  // 3초 대기 후 데이터 로딩 시작
+  setTimeout(function() {
 
-        // 첫 번째 데이터 체크 실행
-        checkData();
-    }, 3000);
+	// 데이터 로딩 및 체크 함수
+	const checkData = () => {
+	  fetchData(function(error, rows) {
+		if (error) {
+		  // 데이터 가져오기 오류 발생 시, 재시도하도록 처리
+		  console.error('Error fetching data:', error);
+		} else {
+		  const dataFound = processSpreadsheetData(rows);
+		  if (dataFound) {
+			// 데이터가 있으면 점 애니메이션 중지
+			clearInterval(dotsInterval);
+			return; // 함수 종료
+		  }
+		}
+		// 데이터가 아직 없으면 최대 대기 시간 확인
+		const elapsedTime = Date.now() - startTime;
+		if (elapsedTime < maxTotalWaitTime) {
+		  // 다음 체크 예약
+		  setTimeout(checkData, dataCheckInterval);
+		} else {
+		  // 최대 대기 시간을 초과하면 에러 메시지 표시
+		  clearInterval(dotsInterval);
+		  displayErrorMessage('죄송합니다. 그래프를 제작할 수 없어요!');
+		}
+	  });
+	};
+
+    // 첫 번째 데이터 체크 실행
+    checkData();
+  }, initialDelay);
 });

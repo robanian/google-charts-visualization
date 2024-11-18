@@ -45,12 +45,13 @@
 
 /* 에러 메시지 스타일 */
 #error-message {
-    color: #543F2E; /* 로딩 메시지와 동일한 색상으로 변경 */
-    font-weight: bold;
-    text-align: center;
-    margin-top: 20px;
-    font-size: 18px;
+  color: #543F2E !important; /* 로딩 메시지와 동일한 색상으로 변경하고 우선순위 부여 */
+  font-weight: bold;
+  text-align: center;
+  margin-top: 20px;
+  font-size: 18px;
 }
+
 /* 전체 페이지 스타일 */
 body {
     background-color: #FEFAE5;

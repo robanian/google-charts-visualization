@@ -49,14 +49,7 @@
   font-weight: bold;
   text-align: center;
   margin-top: 20px;
-  font-size: 18px;
-}
-
-/* 로딩 텍스트 스타일 */
-.loading-text {
   font-size: 24px;
-  color: #543F2E;
-  font-weight: bold;
 }
 
 /* 전체 페이지 스타일 */
@@ -73,7 +66,7 @@ body {
 
 /* 테이블 스타일 */
 .data-table {
-    width: 420px;
+    width: 360px;
     height: 650px;
     border-collapse: collapse;
     background-color: #FFFFFF;
@@ -90,7 +83,6 @@ body {
     box-sizing: border-box;
     vertical-align: middle;
     position: relative;
-    font-family: 'Pretendard';
 }
 
 /* 타이틀 셀 스타일 */
@@ -241,14 +233,6 @@ body {
 
 .description-bold {
     font-weight: 800; /* Pretendard-ExtraBold */
-}
-
-/* 에러 메시지 스타일 */
-.error {
-    color: red;
-    font-weight: 800; /* Pretendard-ExtraBold */
-    text-align: center;
-    padding: 20px;
 }
 
 /* 반응형 폰트 크기 조정 (필요시) */

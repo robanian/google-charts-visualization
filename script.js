@@ -142,14 +142,14 @@ function updateGraph(targetRow) {
   drawGraphs();
 }
 
-// 그래프 그리기 함수 (기존과 동일)
+// 그래프 그리기 함수 수정
 function drawGraphs() {
   const bars = document.querySelectorAll('.bar-common');
 
   bars.forEach(function(bar) {
     const percentage = parseFloat(bar.getAttribute('data-percentage'));
 
-    // 그래프 셀의 너비 가져오기
+    // 그래프 셀의 너비를 부모 요소의 너비로 가져옴
     const graphCellWidth = bar.parentElement.offsetWidth;
     const maxBarWidth = graphCellWidth - 15; // 오른쪽에 15px 여백 남기기
 

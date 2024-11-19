@@ -87,11 +87,11 @@ body {
 
 /* 타이틀 셀 스타일 */
 .title-cell {
-    font-size: 21px;
+    font-size: 19px;
     font-weight: 800; /* Pretendard-ExtraBold */
     text-align: center;
     height: 95px;
-    padding: 10px;
+    padding: 5px;
     word-wrap: break-word;
 }
 

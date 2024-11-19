@@ -185,7 +185,6 @@ document.addEventListener('DOMContentLoaded', function() {
   manageLoadingMessages();
 
   const initialDelay = 3000; // 첫 번째 로딩 메시지 시간 (3초)
-  const secondDelay = 4000; // 두 번째 로딩 메시지 시간 (4초)
   const dataCheckInterval = 1000; // 데이터 탐색 간격 (1초)
   const maxTotalWaitTime = 10000; // 최대 전체 대기 시간 (10초)
 
@@ -203,6 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
           if (dataFound) {
             // 데이터가 있으면 점 애니메이션 중지
             clearInterval(dotsInterval);
+
             return; // 함수 종료
           }
         }
@@ -222,11 +222,5 @@ document.addEventListener('DOMContentLoaded', function() {
     // 첫 번째 데이터 체크 실행
     checkData();
   }, initialDelay);
-
-  // 총 대기 시간이 10초를 넘으면 에러 메시지 표시
-  setTimeout(function() {
-    clearInterval(dotsInterval);
-    displayErrorMessage();
-  }, maxTotalWaitTime);
-
 });
+

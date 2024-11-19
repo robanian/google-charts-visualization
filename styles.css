@@ -62,6 +62,7 @@ body {
     align-items: center;
     height: 100vh; /* 전체 화면 높이 */
     margin: 0;
+	overflow: hidden;
 }
 
 /* 테이블 스타일 */

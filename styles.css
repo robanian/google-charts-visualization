@@ -79,26 +79,30 @@ body {
 
 /* 테이블 셀 공통 스타일 */
 .data-table td {
-    border: 2px solid #543F2E; /* 셀 테두리 통일 */
     box-sizing: border-box;
     vertical-align: middle;
     position: relative;
 }
 
-/* 1. 2행과 3행 사이, 3행과 4행 사이 윤곽선을 점선으로 변경 */
+/* 1행과 2행과 윤곽선을 두꺼운 실선으로 변경 */
 .data-table tr:nth-child(2) td {
-    border-bottom: 2px dotted #543F2E;
-}
-.data-table tr:nth-child(3) td {
-    border-bottom: 2px dotted #543F2E;
+    border-bottom: 2px solid #543F2E;
 }
 
-/* 2. 1열과 2열 사이 윤곽선을 더 얇게 변경 */
+/* 2행과 3행 사이, 3행과 4행 사이 윤곽선을 점선으로 변경 */
+.data-table tr:nth-child(2) td {
+    border-bottom: 1px dotted #543F2E;
+}
+.data-table tr:nth-child(3) td {
+    border-bottom: 1px dotted #543F2E;
+}
+
+/* 1열과 2열 사이 윤곽선을 더 얇게 변경 */
 .data-table td:nth-child(1) {
     border-right: 1px solid #543F2E;
 }
 
-/* 3. 4행과 5행 사이, 5행과 6행 사이 윤곽선을 더 얇게 변경 */
+/* 4행과 5행 사이, 5행과 6행 사이 윤곽선을 더 얇게 변경 */
 .data-table tr:nth-child(4) td {
     border-bottom: 1px solid #543F2E;
 }
@@ -144,7 +148,7 @@ body {
 
 .graph-cell {
     /* 기존 스타일 유지 */
-    width: calc(100% - 76px);
+    width: 284px;
     height: 101px;
     padding-left: 0px;
     padding-right: 0px;
@@ -162,7 +166,7 @@ body {
 .bar-common {
     position: relative;
     max-width: 100%;
-    height: 50%;
+    height: 55%;
     border-radius: 0 40px 40px 0;
 }
 

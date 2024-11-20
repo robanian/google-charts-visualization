@@ -125,7 +125,7 @@ body {
 
 /* 요인 셀 스타일 */
 .factor-cell {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 800; /* Pretendard-ExtraBold */
     text-align: left;
     width: 76px;
@@ -138,7 +138,7 @@ body {
 
 /* 서브 텍스트 스타일 */
 .factor-sub {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 400; /* Pretendard-Regular */
     display: block;
     margin-top: 5px;

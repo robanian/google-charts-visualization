@@ -71,7 +71,7 @@ body {
     height: 650px;
     border-collapse: collapse;
     background-color: #FFFFFF;
-    border: 2px solid #543F2E; /* 전체 테이블 외곽선 */
+    border: 1px solid #543F2E; /* 전체 테이블 외곽선 */
     border-radius: 24px;
     overflow: hidden; /* 경계선 내에 내용 유지 */
     table-layout: fixed; /* 추가: 테이블 레이아웃 고정 */
@@ -79,7 +79,7 @@ body {
 
 /* 테이블 셀 공통 스타일 */
 .data-table td {
-    box-sizing: border-box;
+    box-sizing: border-box; /* 패딩을 포함한 너비 계산 */
     vertical-align: middle;
     position: relative;
 }
@@ -91,10 +91,10 @@ body {
 
 /* 2행과 3행 사이, 3행과 4행 사이 윤곽선을 점선으로 변경 */
 .data-table tr:nth-child(2) td {
-    border-bottom: 1px dotted #543F2E;
+    border-bottom: 1.5px dotted #543F2E;
 }
 .data-table tr:nth-child(3) td {
-    border-bottom: 1px dotted #543F2E;
+    border-bottom: 1.5px dotted #543F2E;
 }
 
 /* 1열과 2열 사이 윤곽선을 더 얇게 변경 */
@@ -116,7 +116,6 @@ body {
     font-weight: 800; /* Pretendard-ExtraBold */
     text-align: center;
     height: 95px;
-    padding: 5px;
     word-wrap: break-word;
 }
 
@@ -135,7 +134,6 @@ body {
     height: 101px;
     padding: 0px 7px 0px 7px;
     word-wrap: break-word;
-    box-sizing: border-box; /* 패딩을 포함한 너비 계산 */
 }
 
 /* 서브 텍스트 스타일 */
@@ -149,11 +147,11 @@ body {
 .graph-cell {
     /* 기존 스타일 유지 */
     width: 284px;
+	min-width: 284px; /* 추가 */
+    max-width: 284px; /* 추가 */
     height: 101px;
     padding-left: 0px;
     padding-right: 0px;
-    position: relative;
-    box-sizing: border-box;
 
     /* 배경 이미지 설정 */
     background-image: url('images/graph-background.png');
@@ -238,10 +236,8 @@ body {
 .description-cell {
     font-size: 14px;
     line-height: 1.5;
-    width: 360px;
     height: 205px;
     padding: 10px;
-    font-weight: 400; /* Pretendard-Regular */
     overflow-y: auto; /* 내용이 넘칠 경우 스크롤 */
 }
 
@@ -259,6 +255,7 @@ body {
 }
 
 .description-text {
+	font-weight: 400; /* Pretendard-Regular */
     text-align: left;
 }
 

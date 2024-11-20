@@ -85,7 +85,7 @@ body {
 }
 
 /* 1행과 2행과 윤곽선을 두꺼운 실선으로 변경 */
-.data-table tr:nth-child(2) td {
+.data-table tr:nth-child(1) td {
     border-bottom: 2px solid #543F2E;
 }
 

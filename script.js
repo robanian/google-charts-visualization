@@ -184,9 +184,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // 로딩 메시지 관리 시작
   manageLoadingMessages();
 
-  const initialDelay = 3000; // 첫 번째 로딩 메시지 시간 (3초)
+  const initialDelay = 5000; // 첫 번째 로딩 메시지 시간 (3초)
   const dataCheckInterval = 1000; // 데이터 탐색 간격 (1초)
-  const maxTotalWaitTime = 10000; // 최대 전체 대기 시간 (10초)
+  const maxTotalWaitTime = 100000; // 최대 전체 대기 시간 (100초)
 
   // 첫 번째 메시지 시간 후 데이터 로딩 시작
   setTimeout(function() {
